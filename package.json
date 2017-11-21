@@ -1,0 +1,31 @@
+{
+  "name": "rybilovo",
+  "version": "1.0.0",
+  "description": "«Передвигающий горы начинает с того, что убирает маленькие камешки»",
+  "main": "custom.js",
+  "dependencies": {
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1"
+  },
+  "scripts": {
+    "start": "babel src -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmoskovchuk/rybilovo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmoskovchuk/rybilovo/issues"
+  },
+  "homepage": "https://github.com/mmoskovchuk/rybilovo#readme"
+}
