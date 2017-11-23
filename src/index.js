@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import ui from './components/App.jsx';
+var React = require('react');
+var ReactDOM = require('react-dom');
+var App = require('./components/App');
 
-ReactDOM.render(ui, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));

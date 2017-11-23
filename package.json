@@ -4,8 +4,8 @@
   "description": "«Передвигающий горы начинает с того, что убирает маленькие камешки»",
   "main": "custom.js",
   "dependencies": {
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1"
+    "react": "^0.14.9",
+    "react-dom": "^0.14.9"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

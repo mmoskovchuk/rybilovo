@@ -15,5 +15,8 @@ module.exports = {
                 exclude: path.resolve(__dirname, 'node_modules')
             }
         ]
+    },
+    resolve: {
+        extensions: ['.js', '.jsx']
     }
 };

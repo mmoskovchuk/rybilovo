@@ -1,7 +1,8 @@
-import React from 'react';
+var React = require('react');
 
-var ui =
-    React.createElement('div', {},
-        React.createElement('h1', {}, "Hello World"),);
-
-export default ui;
+var App = React.createClass({
+    render: function() {
+        return <div>Hello World</div>;
+    }
+});
+module.exports = App;
