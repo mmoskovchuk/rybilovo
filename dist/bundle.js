@@ -10843,9 +10843,6 @@ module.exports = ReactElementValidator;
 /* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
 var React = __webpack_require__(51);
 var ReactDOM = __webpack_require__(158);
 var App = __webpack_require__(159);
@@ -19935,23 +19932,28 @@ module.exports = __webpack_require__(52);
 /* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
 var React = __webpack_require__(51);
+var styles = __webpack_require__(160);
 
 var App = React.createClass({
     displayName: 'App',
 
-    render: function render() {
+    render: function () {
         return React.createElement(
             'div',
-            null,
+            { className: 'base' },
             'Hello World'
         );
     }
 });
+
 module.exports = App;
+
+/***/ }),
+/* 160 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);
