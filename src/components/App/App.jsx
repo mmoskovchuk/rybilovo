@@ -1,6 +1,6 @@
 var React = require('react');
 //var styles = require('./style.less');
-var css = require('!css-loader!stylus-loader!./app.styl');
+//var css = require('!css-loader!stylus-loader!./app.styl');
 
 var App = React.createClass({
     render: function() {

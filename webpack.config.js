@@ -5,19 +5,21 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
     entry: {
         script: './src/index.js',
-        //style: './src/components/App/app.styl'
     },
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist')
     },
     module: {
-        rules: [
-
-        ],
+        rules: [],
         loaders: [
+            // Extract css files
             {
-                test: /\.stly$/,
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+            },
+            {
+                test: /\.styl$/,
                 loader: ExtractTextPlugin.extract('style-loader', 'css-loader!stylus-loader')
             },
             {
