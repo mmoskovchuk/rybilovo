@@ -47,7 +47,8 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(158);
 	var App = __webpack_require__(159);
-	var css = __webpack_require__(160);
+
+	var css = __webpack_require__(161);
 
 	ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
 
@@ -19754,8 +19755,26 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
-	//var styles = require('./style.less');
-	//var css = require('!css-loader!stylus-loader!./app.styl');
+
+	var css = __webpack_require__(160);
+
+	var contacts = [{
+	    id: 1,
+	    name: 'Kill Bill',
+	    phoneNumber: '6565656556'
+	}, {
+	    id: 2,
+	    name: 'Ranga Rao',
+	    phoneNumber: '4444444444'
+	}, {
+	    id: 3,
+	    name: 'Johnny Cash',
+	    phoneNumber: '6565656556'
+	}, {
+	    id: 4,
+	    name: 'Albert Einstein',
+	    phoneNumber: '4444444444'
+	}];
 
 	var App = React.createClass({
 	    displayName: 'App',
@@ -19763,8 +19782,20 @@
 	    render: function () {
 	        return React.createElement(
 	            'div',
-	            { className: 'base' },
-	            'Hello World'
+	            { className: [css.root__btn, css.root__btn_type_submit].join(' ') },
+	            React.createElement(
+	                'ul',
+	                null,
+	                contacts.map(function (el) {
+	                    return React.createElement(
+	                        'li',
+	                        null,
+	                        ' ',
+	                        el.name,
+	                        ' '
+	                    );
+	                })
+	            )
 	        );
 	    }
 	});
@@ -19773,6 +19804,12 @@
 
 /***/ }),
 /* 160 */
+/***/ (function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 161 */
 /***/ (function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
