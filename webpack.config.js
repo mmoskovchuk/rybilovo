@@ -11,26 +11,44 @@ module.exports = {
         path: path.resolve(__dirname, 'dist')
     },
     module: {
-        rules: [],
-        loaders: [
-            // Extract css files
+        rules: [
+            // CSS loader con CSS Modules
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true
+                        }
+                    }
+                ]
             },
+            // Stylus loader con CSS Modules
             {
                 test: /\.styl$/,
-                loader: ExtractTextPlugin.extract('style-loader', 'css-loader!stylus-loader')
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true,
+                            localIdentName: '[name]__[local]___[hash:base64:5]'
+                        }
+                    },
+                    'stylus-loader'
+                ]
             },
             {
                 test: /.jsx?$/,
                 loader: 'babel-loader',
                 exclude: path.resolve(__dirname, 'node_modules')
             }
-        ]
+        ],
     },
     resolve: {
-        extensions: ['', '.js', '.jsx', '.css', '.styl']
+        extensions: ['.js', '.jsx', '.css', '.styl']
     },
     plugins: [
         new ExtractTextPlugin('./css/style.css', {allChunks: true})

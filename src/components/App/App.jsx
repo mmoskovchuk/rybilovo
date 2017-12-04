@@ -25,7 +25,7 @@ var contacts = [
 var App = React.createClass({
     render: function() {
         return (
-            <div className={[css.root__btn, css.root__btn_type_submit].join(' ')}>
+            <div className={[css.root]}>
                 <ul>
                     {
                         contacts.map(function(el) {
