@@ -20249,39 +20249,70 @@ var css = __webpack_require__(162);
 var contacts = [{
     id: 1,
     name: 'Kill Bill',
-    phoneNumber: '6565656556'
+    phoneNumber: '6565656556',
+    image: 'https://media.giphy.com/media/3o6nV6fZlIaVjb6YMg/giphy.gif'
 }, {
     id: 2,
     name: 'Ranga Rao',
-    phoneNumber: '4444444444'
+    phoneNumber: '8957685443',
+    image: 'https://media.giphy.com/media/d2YWTOsVtuHgOHhC/giphy.gif'
 }, {
     id: 3,
     name: 'Johnny Cash',
-    phoneNumber: '6565656556'
+    phoneNumber: '6565656556',
+    image: 'https://media.giphy.com/media/xUNd9XlvXJdh9oAsve/giphy.gif'
 }, {
     id: 4,
     name: 'Albert Einstein',
-    phoneNumber: '4444444444'
+    phoneNumber: '23434545644',
+    image: 'https://media.giphy.com/media/3ov9k8OQOBNlfdWnEk/giphy.gif'
 }];
+
+var Contact = React.createClass({
+    displayName: 'Contact',
+
+    render: function () {
+        return React.createElement(
+            'li',
+            { className: [css.contact] },
+            React.createElement('img', { className: [css.contactImg], src: this.props.image, width: '52px', height: '50px' }),
+            React.createElement(
+                'div',
+                { className: [css.contactDes] },
+                React.createElement(
+                    'div',
+                    { className: [css.contactName] },
+                    this.props.name
+                ),
+                React.createElement(
+                    'div',
+                    { className: [css.contactNumber] },
+                    this.props.phoneNumber
+                )
+            )
+        );
+    }
+});
 
 var App = React.createClass({
     displayName: 'App',
 
+    handleSearch: function () {},
+
     render: function () {
         return React.createElement(
             'div',
-            { className: [css.root] },
+            { className: [css.contactBlock] },
+            React.createElement('input', { type: 'text', className: [css.contactSearch], onChange: this.handleSearch }),
             React.createElement(
                 'ul',
-                null,
+                { className: [css.contactList] },
                 contacts.map(function (el) {
-                    return React.createElement(
-                        'li',
-                        null,
-                        ' ',
-                        el.name,
-                        ' '
-                    );
+                    return React.createElement(Contact, { key: el.id,
+                        name: el.name,
+                        phoneNumber: el.phoneNumber,
+                        image: el.image
+                    });
                 })
             )
         );
@@ -20325,11 +20356,18 @@ exports = module.exports = __webpack_require__(86)();
 
 
 // module
-exports.push([module.i, ".app__root___2jpws {\n  color: #ffa500;\n  font-weight: bold;\n}\n", ""]);
+exports.push([module.i, ".app__contactBlock___3ECBd {\n  text-align: center;\n}\n.app__contactList___25GF6 {\n  color: #000;\n  font-weight: bold;\n  width: max-content;\n  margin: auto;\n  padding: 0;\n  text-align: left;\n}\n.app__contact___1ZlIU {\n  display: flex;\n  align-items: center;\n  height: 60px;\n  border-bottom: 1px dotted;\n}\n.app__contactDes___1pkUo {\n  display: block;\n}\n.app__contactImg___v3Iag {\n  display: block;\n  margin-right: 10px;\n  border-radius: 40px;\n}\n.app__contactName___2jgjL {\n  display: block;\n  margin-right: 10px;\n}\n.app__contactNumber___gVMOX {\n  display: block;\n}\n.app__contactSearch___1R3AB {\n  width: 180px;\n  border-radius: 3px;\n  margin-bottom: 15px;\n}\n", ""]);
 
 // exports
 exports.locals = {
-	"root": "app__root___2jpws"
+	"contactBlock": "app__contactBlock___3ECBd",
+	"contactList": "app__contactList___25GF6",
+	"contact": "app__contact___1ZlIU",
+	"contactDes": "app__contactDes___1pkUo",
+	"contactImg": "app__contactImg___v3Iag",
+	"contactName": "app__contactName___2jgjL",
+	"contactNumber": "app__contactNumber___gVMOX",
+	"contactSearch": "app__contactSearch___1R3AB"
 };
 
 /***/ }),
