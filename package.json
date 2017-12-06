@@ -4,25 +4,21 @@
   "description": "«Передвигающий горы начинает с того, что убирает маленькие камешки»",
   "main": "index.js",
   "dependencies": {
-    "css-loader": "^0.23.1",
     "react": "^0.14.9",
-    "react-dom": "^0.14.9",
-    "style-loader": "^0.13.0"
+    "react-dom": "^0.14.9"
   },
   "devDependencies": {
+    "css-loader": "^0.23.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.10.4",
     "babel-loader": "^6.2.4",
     "babel-preset-react": "^6.24.1",
     "extract-text-webpack-plugin": "^3.0.2",
-    "file-loader": "^1.1.5",
     "stylus": "^0.54.5",
     "stylus-loader": "^1.5.1",
-    "stylus-relative-loader": "^3.4.0",
     "webpack": "^3.9.1"
   },
   "scripts": {
-    "start": "babel src -d dist",
     "build": "webpack -p",
     "watch": "webpack --watch"
   },
