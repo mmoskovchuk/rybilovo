@@ -2,13 +2,18 @@ var React = require('react');
 
 var css = require('./area.styl');
 
-var Area = React.createClass({
+var Card = require('../Card/Card');
 
-    render: function() {
-        return (
-            <div className={[css.helloBlock]}>Area</div>
-        );
-    }
-});
+function Area() {
+    return (
+        <div className={[css.area__border]}>
+            <Card />
+            <Card />
+            <Card />
+            <Card />
+            <Card />
+        </div>
+    );
+}
 
 module.exports = Area;

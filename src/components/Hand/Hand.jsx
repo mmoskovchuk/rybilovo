@@ -2,13 +2,20 @@ var React = require('react');
 
 var css = require('./hand.styl');
 
-var Hand = React.createClass({
+var Card = require('../Card/Card');
 
-    render: function() {
-        return (
-            <div className={[css.helloBlock]}>Hand</div>
-        );
-    }
-});
+function Hand() {
+    return (
+        <div className={[css.hand__border]}>
+            <Card />
+            <Card />
+            <Card />
+            <Card />
+            <Card />
+            <Card />
+        </div>
+    );
+}
+
 
 module.exports = Hand;
