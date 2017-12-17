@@ -1,5 +1,4 @@
 var React = require('react');
-
 var css = require('./card.styl');
 
 function Card() {

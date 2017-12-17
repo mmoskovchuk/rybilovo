@@ -1,15 +1,9 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Area = require('./components/Area/Area');
-var Hand = require('./components/Hand/Hand');
+var App = require('./components/App/App');
 var cssBase = require('./base.styl');
 
 ReactDOM.render(
-    <Area />,
-    document.getElementById('area')
-);
-
-ReactDOM.render(
-    <Hand />,
-    document.getElementById('hand')
+    <App />,
+    document.getElementById('root')
 );
