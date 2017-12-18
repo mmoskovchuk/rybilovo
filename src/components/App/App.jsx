@@ -7,13 +7,11 @@ var Hand = require('../Hand/Hand');
 
 var App = React.createClass({
     render: function () {
-        return (
-            <ul>
-                {this.map(function(item){
-                    return <Card key={item} />
-                })}
-            </ul>
-        )
+        var cards = ["card","card1","card2","card3"];
+        var cardsList = cards.map(function(index){
+            return <Card key={ index } />
+        });
+        return <div className={[cssArea.root]}> { cardsList } </div>
     }
 });
 

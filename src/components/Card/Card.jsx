@@ -3,7 +3,7 @@ var css = require('./card.styl');
 
 function Card() {
     return (
-        <div className={[css.card__border]}>Card</div>
+        <div className={[css.root]}>Card</div>
     );
 }
 

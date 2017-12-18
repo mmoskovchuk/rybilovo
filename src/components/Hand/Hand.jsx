@@ -3,7 +3,7 @@ var css = require('./hand.styl');
 
 function Hand() {
     return (
-        <div className={[css.hand__border]}></div>
+        <div></div>
     );
 }
 
