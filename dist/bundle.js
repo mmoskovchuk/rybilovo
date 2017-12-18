@@ -11271,32 +11271,18 @@ module.exports = ReactElementValidator;
 /* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
+var React = __webpack_require__(18);
+var css = __webpack_require__(169);
 
-// load the styles
-var content = __webpack_require__(166);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../../node_modules/css-loader/index.js??ref--1-1!../../../node_modules/stylus-loader/index.js!./area.styl", function() {
-			var newContent = require("!!../../../node_modules/css-loader/index.js??ref--1-1!../../../node_modules/stylus-loader/index.js!./area.styl");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
+function Card() {
+    return React.createElement(
+        'div',
+        { className: [css.root] },
+        'Card'
+    );
 }
+
+module.exports = Card;
 
 /***/ }),
 /* 89 */
@@ -20394,29 +20380,21 @@ module.exports = __webpack_require__(54);
 
 var React = __webpack_require__(18);
 var css = __webpack_require__(163);
-var cssArea = __webpack_require__(88);
-var Area = __webpack_require__(167);
-var Card = __webpack_require__(168);
+var Area = __webpack_require__(166);
 var Hand = __webpack_require__(171);
 
 var App = React.createClass({
     displayName: 'App',
 
     render: function () {
-        var cards = ["card", "card1", "card2", "card3"];
-        var cardsList = cards.map(function (index) {
-            return React.createElement(Card, { key: index });
-        });
         return React.createElement(
             'div',
-            { className: [cssArea.root] },
-            ' ',
-            cardsList,
-            ' '
+            null,
+            React.createElement(Area, null),
+            React.createElement(Hand, null)
         );
     }
 });
-
 module.exports = App;
 
 /***/ }),
@@ -20563,6 +20541,65 @@ module.exports = function (css) {
 /* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var React = __webpack_require__(18);
+var css = __webpack_require__(167);
+var Card = __webpack_require__(88);
+
+var Area = React.createClass({
+    displayName: 'Area',
+
+    render: function () {
+        var cards = ["card", "card1", "card2", "card3"];
+        var cardsList = cards.map(function (card, index) {
+            return React.createElement(Card, { key: index });
+        });
+        return React.createElement(
+            'div',
+            { className: [css.root] },
+            ' ',
+            cardsList,
+            ' '
+        );
+    }
+});
+
+module.exports = Area;
+
+/***/ }),
+/* 167 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(168);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(25)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../node_modules/css-loader/index.js??ref--1-1!../../../node_modules/stylus-loader/index.js!./area.styl", function() {
+			var newContent = require("!!../../../node_modules/css-loader/index.js??ref--1-1!../../../node_modules/stylus-loader/index.js!./area.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
 exports = module.exports = __webpack_require__(24)();
 // imports
 
@@ -20574,40 +20611,6 @@ exports.push([module.i, ".area__root {\n  padding: 20px;\n  height: 200px;\n  te
 exports.locals = {
 	"root": "area__root"
 };
-
-/***/ }),
-/* 167 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var React = __webpack_require__(18);
-var css = __webpack_require__(88);
-var Area = React.createClass({
-    displayName: 'Area',
-
-
-    render: function () {
-        return React.createElement('div', null);
-    }
-});
-
-module.exports = Area;
-
-/***/ }),
-/* 168 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var React = __webpack_require__(18);
-var css = __webpack_require__(169);
-
-function Card() {
-    return React.createElement(
-        'div',
-        { className: [css.root] },
-        'Card'
-    );
-}
-
-module.exports = Card;
 
 /***/ }),
 /* 169 */
@@ -20662,10 +20665,25 @@ exports.locals = {
 
 var React = __webpack_require__(18);
 var css = __webpack_require__(172);
+var Card = __webpack_require__(88);
 
-function Hand() {
-    return React.createElement('div', null);
-}
+var Hand = React.createClass({
+    displayName: 'Hand',
+
+    render: function () {
+        var cards = ["card", "card1", "card2", "card3", "card4"];
+        var cardsList = cards.map(function (index) {
+            return React.createElement(Card, { key: index });
+        });
+        return React.createElement(
+            'div',
+            { className: [css.root] },
+            ' ',
+            cardsList,
+            ' '
+        );
+    }
+});
 
 module.exports = Hand;
 
