@@ -11276,42 +11276,44 @@ var css = __webpack_require__(163);
 var Area = __webpack_require__(166);
 var Hand = __webpack_require__(171);
 
-var myCards = [{
-    img: 'https://vignette.wikia.nocookie.net/btc/images/3/33/S_luchnik_dzara.jpg',
-    name: 'Лучник Дзара',
-    damage: 1,
-    health: 7
-}, {
-    img: 'https://vignette.wikia.nocookie.net/btc/images/3/37/S_amazonka.jpg',
-    name: 'Амазонка',
-    damage: 1,
-    health: 5
-}, {
-    img: 'https://vignette.wikia.nocookie.net/btc/images/6/6b/S_kulhan.jpg',
-    name: 'Кулхан',
-    damage: 2,
-    health: 5
-}, {
-    img: 'https://vignette.wikia.nocookie.net/btc/images/8/82/S_luchnik_toa-dana.jpg',
-    name: 'Лучник Тоа-Дана',
-    damage: 2,
-    health: 6
-}, {
-    img: 'https://vignette.wikia.nocookie.net/btc/images/e/e0/S_ork_voevoda.jpg',
-    name: 'Орк-воевода',
-    damage: 2,
-    health: 7
-}];
-
 var App = React.createClass({
     displayName: 'App',
 
-    /*/!*установка состояния*!/
-    getInitialState: function() {
+    /*установка состояния*/
+    getInitialState: function () {
         return {
-            bgColor: "teal"
+            a1: {
+                img: 'https://vignette.wikia.nocookie.net/btc/images/3/33/S_luchnik_dzara.jpg',
+                name: 'Лучник Дзара',
+                damage: 1,
+                health: 7
+            },
+            a2: {
+                img: 'https://vignette.wikia.nocookie.net/btc/images/3/37/S_amazonka.jpg',
+                name: 'Амазонка',
+                damage: 1,
+                health: 5
+            },
+            a3: {
+                img: 'https://vignette.wikia.nocookie.net/btc/images/6/6b/S_kulhan.jpg',
+                name: 'Кулхан',
+                damage: 2,
+                health: 5
+            },
+            a4: {
+                img: 'https://vignette.wikia.nocookie.net/btc/images/8/82/S_luchnik_toa-dana.jpg',
+                name: 'Лучник Тоа-Дана',
+                damage: 2,
+                health: 6
+            },
+            a5: {
+                img: 'https://vignette.wikia.nocookie.net/btc/images/e/e0/S_ork_voevoda.jpg',
+                name: 'Орк-воевода',
+                damage: 2,
+                health: 7
+            }
         };
-    },*/
+    },
     render: function () {
         return React.createElement(
             'div',
@@ -11330,13 +11332,17 @@ module.exports = App;
 var React = __webpack_require__(18);
 var css = __webpack_require__(169);
 
-function Card() {
-    return React.createElement(
-        'div',
-        { className: [css.root] },
-        'Card'
-    );
-}
+var Card = React.createClass({
+    displayName: 'Card',
+
+    render: function () {
+        return React.createElement(
+            'div',
+            { className: [css.root] },
+            'Card'
+        );
+    }
+});
 
 module.exports = Card;
 
@@ -20582,17 +20588,11 @@ var Area = React.createClass({
     displayName: 'Area',
 
     render: function () {
-        var cards = ["card", "card1", "card2", "card3"];
-        var cardsList = cards.map(function (card, index) {
-            return React.createElement(Card, { key: index });
-        });
-        return React.createElement(
-            'div',
-            { className: [css.root] },
-            ' ',
-            cardsList,
-            ' '
-        );
+        // var cards = ["card","card1","card2","card3"];
+        // var cardsList = cards.map(function(card,index){
+        //     return <Card key={ index } />
+        // });
+        return React.createElement('div', { className: [css.root] });
     }
 });
 
@@ -20685,7 +20685,7 @@ exports = module.exports = __webpack_require__(24)();
 
 
 // module
-exports.push([module.i, ".card__root {\n  padding: 20px;\n  border: 1px solid;\n  width: 50px;\n  height: 100px;\n  margin: 10px;\n  text-align: center;\n}\n", ""]);
+exports.push([module.i, ".card__root {\n  padding: 20px;\n  border: 1px solid;\n  width: auto;\n  height: 100px;\n  margin: 10px;\n  text-align: center;\n}\n", ""]);
 
 // exports
 exports.locals = {
@@ -20699,7 +20699,6 @@ exports.locals = {
 var React = __webpack_require__(18);
 var css = __webpack_require__(172);
 var Card = __webpack_require__(89);
-var App = __webpack_require__(88);
 
 var myCards = [{
     img: 'https://vignette.wikia.nocookie.net/btc/images/3/33/S_luchnik_dzara.jpg',
@@ -20734,22 +20733,37 @@ var Hand = React.createClass({
     render: function () {
 
         var cardsList = myCards.map(function (el, index) {
-            return React.createElement(Card, {
-                key: index,
-                name: el.name
-            });
+            return React.createElement(
+                'div',
+                { key: index },
+                React.createElement(
+                    'div',
+                    null,
+                    el.name
+                ),
+                React.createElement(
+                    'div',
+                    null,
+                    '\u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435: ',
+                    el.health
+                ),
+                React.createElement('img', { src: el.img }),
+                React.createElement(Card, null),
+                React.createElement(
+                    'div',
+                    null,
+                    '\u043D\u0430\u043D\u043E\u0441\u0438\u0442 \u0443\u0449\u0435\u0440\u0431: ',
+                    el.damage
+                )
+            );
         });
         return React.createElement(
             'div',
-            { src: this.props.name, className: [css.root] },
-            cardsList
+            { className: [css.root] },
+            ' ',
+            cardsList,
+            ' '
         );
-
-        /*var cards = ["card","card1","card2","card3","card4"];
-        var cardsList = cards.map(function(index){
-            return <Card key={ index }></Card>
-        });
-        return <div className={[css.root]}> { cardsList } </div>*/
     }
 });
 
@@ -20795,7 +20809,7 @@ exports = module.exports = __webpack_require__(24)();
 
 
 // module
-exports.push([module.i, ".hand__root {\n  padding: 20px;\n  border: 1px solid;\n  height: 200px;\n  margin: 10px 0 0 0;\n  text-align: center;\n  display: flex;\n  justify-content: space-around;\n}\n", ""]);
+exports.push([module.i, ".hand__root {\n  padding: 20px;\n  border: 1px solid;\n  height: auto;\n  margin: 10px 0 0 0;\n  text-align: center;\n  display: flex;\n  justify-content: space-around;\n}\nimg {\n  width: 65px;\n  height: auto;\n  margin: 10px auto 0;\n}\n", ""]);
 
 // exports
 exports.locals = {

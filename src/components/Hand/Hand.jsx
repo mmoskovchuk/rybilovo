@@ -1,7 +1,6 @@
 var React = require('react');
 var css = require('./hand.styl');
 var Card = require('../Card/Card');
-var App = require('../App/App');
 
 var myCards = [
     {
@@ -36,19 +35,15 @@ var Hand = React.createClass({
     render: function () {
 
             var cardsList = myCards.map(function (el,index) {
-                return <Card
-                    key={ index }
-                    name={ el.name }
-                />;
+                return <div key={ index }>
+                        <div>{el.name}</div>
+                        <div>здоровье: {el.health}</div>
+                        <img src={ el.img } />
+                            <Card/>
+                        <div>наносит ущерб: {el.damage}</div>
+                </div>;
             });
-            return <div src={this.props.name} className={[css.root]}>{cardsList}</div>
-
-
-        /*var cards = ["card","card1","card2","card3","card4"];
-        var cardsList = cards.map(function(index){
-            return <Card key={ index }></Card>
-        });
-        return <div className={[css.root]}> { cardsList } </div>*/
+            return <div className={[css.root]}> {cardsList} </div>
     }
 });
 
