@@ -43,10 +43,11 @@ var App = React.createClass({
     },
 
     render: function () {
-        return(
+        var data = this.state.data;
+        return (
             <div>
                 <Area />
-                <Hand />
+                <Hand items={data}/>
             </div>
         )
     }
