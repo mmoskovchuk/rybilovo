@@ -11284,17 +11284,17 @@ var Card = React.createClass({
             React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name }),
             React.createElement(
                 'div',
-                { className: [css.root__block_name] },
+                { className: [css.root__name] },
                 this.props.name
             ),
             React.createElement(
                 'div',
-                { className: [css.root__block_damage] },
+                { className: [css.root__damage] },
                 this.props.damage
             ),
             React.createElement(
                 'div',
-                { className: [css.root__block_health] },
+                { className: [css.root__health] },
                 React.createElement(
                     'span',
                     null,
@@ -20606,7 +20606,7 @@ var Area = React.createClass({
     displayName: 'Area',
 
     render: function () {
-        return React.createElement('div', { className: [css.root] });
+        return React.createElement('div', { className: css.root });
     }
 });
 
@@ -20699,15 +20699,15 @@ exports = module.exports = __webpack_require__(24)();
 
 
 // module
-exports.push([module.i, ".card__root {\n  padding: 20px 0;\n  border: 1px solid;\n  width: 135px;\n  height: auto;\n  margin: 10px;\n  text-align: center;\n  position: relative;\n  background: url(\"http://festofale.ca/wp-content/uploads/2016/02/parchment-bg4.jpg\");\n  background-size: cover;\n  border-radius: 5px;\n}\n.card__root__img {\n  width: 80px;\n  height: auto;\n  margin: 0 auto 5px auto;\n}\n.card__root__block_name {\n  color: #fff;\n  border: 1px solid #000;\n  border-right: 0;\n  border-left: 0;\n  font-size: 15px;\n  font-weight: bold;\n  padding: 0;\n  margin: 0;\n  white-space: pre;\n  background: linear-gradient(to bottom, #f0b7a1 0%, #8c3310 50%, #752201 51%, #bf6e4e 100%);\n  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;\n}\n.card__root__block_damage {\n  position: absolute;\n  top: 0;\n  color: #fff;\n  font-size: 15px;\n  font-weight: bold;\n  padding: 4px;\n  margin: 0;\n  background: #3f51b5;\n  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;\n}\n.card__root__block_health {\n  color: #e81d62;\n  font-weight: bold;\n  font-size: 15px;\n  margin-top: 5px;\n}\n", ""]);
+exports.push([module.i, ".card__root {\n  padding: 20px 0;\n  border: 1px solid;\n  width: 135px;\n  height: auto;\n  margin: 10px;\n  text-align: center;\n  position: relative;\n  background: url(\"http://festofale.ca/wp-content/uploads/2016/02/parchment-bg4.jpg\");\n  background-size: cover;\n  border-radius: 5px;\n}\n.card__root__img {\n  width: 80px;\n  height: auto;\n  margin: 0 auto 5px auto;\n}\n.card__root__name {\n  color: #fff;\n  border: 1px solid #000;\n  border-right: 0;\n  border-left: 0;\n  font-size: 15px;\n  font-weight: bold;\n  padding: 0;\n  margin: 0;\n  white-space: pre;\n  background: linear-gradient(to bottom, #f0b7a1 0%, #8c3310 50%, #752201 51%, #bf6e4e 100%);\n  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;\n}\n.card__root__damage {\n  position: absolute;\n  top: 0;\n  color: #fff;\n  font-size: 15px;\n  font-weight: bold;\n  padding: 4px;\n  margin: 0;\n  background: #3f51b5;\n  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;\n}\n.card__root__health {\n  color: #e81d62;\n  font-weight: bold;\n  font-size: 15px;\n  margin-top: 5px;\n}\n", ""]);
 
 // exports
 exports.locals = {
 	"root": "card__root",
 	"root__img": "card__root__img",
-	"root__block_name": "card__root__block_name",
-	"root__block_damage": "card__root__block_damage",
-	"root__block_health": "card__root__block_health"
+	"root__name": "card__root__name",
+	"root__damage": "card__root__damage",
+	"root__health": "card__root__health"
 };
 
 /***/ }),
@@ -20733,7 +20733,7 @@ var Hand = React.createClass({
         });
         return React.createElement(
             'div',
-            { className: [css.root] },
+            { className: css.root },
             cardsList
         );
     }

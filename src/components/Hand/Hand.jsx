@@ -14,7 +14,7 @@ var Hand = React.createClass({
                 health={el.health}
             />
         });
-        return <div className={[css.root]}>{cardsList}</div>
+        return <div className={css.root}>{cardsList}</div>
     }
 });
 
