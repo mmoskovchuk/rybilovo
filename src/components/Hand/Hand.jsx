@@ -2,7 +2,6 @@ var React = require('react');
 var css = require('./hand.styl');
 var Card = require('../Card/Card');
 
-
 var Hand = React.createClass({
     render: function () {
 

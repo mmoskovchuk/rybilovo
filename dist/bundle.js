@@ -11273,14 +11273,38 @@ module.exports = ReactElementValidator;
 
 var React = __webpack_require__(18);
 var css = __webpack_require__(169);
+var Area = __webpack_require__(166);
 
+var Element = React.createClass({
+    displayName: 'Element',
+
+    render: function () {
+        return React.createElement(
+            'p',
+            null,
+            'test'
+        );
+    }
+});
 var Card = React.createClass({
     displayName: 'Card',
 
-    handleClick() {
-        console.log(this.props.name);
+    getInitialState() {
+        return {
+            itemh: []
+        };
+    },
+    handleClick: function () {
+        var text = this.state.text;
+        var itemh = this.state.itemh;
+        itemh.push(text);
+        this.setState({
+            itemh: itemh
+        });
     },
     render: function () {
+        var itemj = this.state.itemh;
+
         return React.createElement(
             'div',
             { className: [css.root], onClick: this.handleClick },
@@ -11304,6 +11328,13 @@ var Card = React.createClass({
                     '\u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435: '
                 ),
                 this.props.health
+            ),
+            React.createElement(
+                'div',
+                { id: 'list' },
+                itemj.map(function (el, index) {
+                    return React.createElement(Element, { key: index, items: itemj });
+                })
             )
         );
     }
