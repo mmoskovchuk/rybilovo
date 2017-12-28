@@ -42,11 +42,15 @@ var App = React.createClass({
         }
     },
 
+    printMsg: function (msg) {
+        console.log(msg);
+    },
+
     render: function () {
         var data = this.state.data;
         return (
             <div>
-                <Area />
+                <Area printMsg={this.printMsg} />
                 <Hand items={data}/>
             </div>
         )
