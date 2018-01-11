@@ -4,11 +4,10 @@ var Card = require('../Card/Card');
 
 var Hand = React.createClass({
     render: function () {
+        var handleClick = this.props.handleClick;
+
         var n = 3;
         var item = this.props.items;
-        var handleClick = this.props.handleClick;
-        console.log(handleClick);
-        item.push(handleClick);
         var shuffled = item.sort(function() {
             return .5 - Math.random()
         });
@@ -20,7 +19,8 @@ var Hand = React.createClass({
                 name={el.name}
                 damage={el.damage}
                 health={el.health}
-                handleClick={el.handleClick}
+
+                click={handleClick}
             />
         });
         return <div className={css.root}>{cardsList}</div>

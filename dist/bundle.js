@@ -11279,7 +11279,16 @@ var Area = React.createClass({
     displayName: 'Area',
 
     render: function () {
-        return React.createElement('div', { className: css.root, onClick: this.props.printMsg.bind(null, 'suka') });
+        var itemData = this.props.arr;
+        return React.createElement(
+            'div',
+            { className: css.root },
+            itemData.map(function (el, index) {
+                return React.createElement(Card, {
+                    key: index
+                });
+            })
+        );
     }
 });
 
@@ -11291,41 +11300,14 @@ module.exports = Area;
 
 var React = __webpack_require__(18);
 var css = __webpack_require__(169);
-var Area = __webpack_require__(88);
 
-var Element = React.createClass({
-    displayName: 'Element',
-
-    render: function () {
-        return React.createElement(
-            'p',
-            null,
-            'test'
-        );
-    }
-});
 var Card = React.createClass({
     displayName: 'Card',
 
-    getInitialState() {
-        return {
-            itemh: []
-        };
-    },
-    handleClick: function () {
-        var text = this.state.text;
-        var itemh = this.state.itemh;
-        itemh.push(text);
-        this.setState({
-            itemh: itemh
-        });
-    },
     render: function () {
-        var itemj = this.state.itemh;
-
         return React.createElement(
             'div',
-            { className: [css.root], onClick: this.handleClick },
+            { className: [css.root], onClick: this.props.click },
             React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name }),
             React.createElement(
                 'div',
@@ -11346,13 +11328,6 @@ var Card = React.createClass({
                     '\u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435: '
                 ),
                 this.props.health
-            ),
-            React.createElement(
-                'div',
-                { id: 'list' },
-                itemj.map(function (el, index) {
-                    return React.createElement(Element, { key: index, items: itemj });
-                })
             )
         );
     }
@@ -20490,21 +20465,28 @@ var App = React.createClass({
                 name: 'Орк-воевода',
                 damage: 2,
                 health: 7
-            }]
+            }],
+
+            itemData: []
         };
     },
-
-    printMsg: function (msg) {
-        console.log(msg);
+    handleClick: function () {
+        var text = this.state.text;
+        var itemData = this.state.itemData;
+        itemData.push(text);
+        this.setState({
+            itemData: itemData
+        });
     },
 
     render: function () {
         var data = this.state.data;
+        var itemData = this.state.itemData;
         return React.createElement(
             'div',
             null,
-            React.createElement(Area, { printMsg: this.printMsg }),
-            React.createElement(Hand, { items: data })
+            React.createElement(Area, { items: data, arr: itemData, handleClick: this.handleClick }),
+            React.createElement(Hand, { handleClick: this.handleClick, items: data })
         );
     }
 });
@@ -20690,7 +20672,7 @@ exports = module.exports = __webpack_require__(24)();
 
 
 // module
-exports.push([module.i, ".area__root {\n  padding: 20px;\n  height: 200px;\n  text-align: center;\n  border: 1px solid;\n  display: flex;\n  justify-content: space-around;\n}\n", ""]);
+exports.push([module.i, ".area__root {\n  padding: 20px;\n  height: auto;\n  text-align: center;\n  border: 1px solid;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n}\n", ""]);
 
 // exports
 exports.locals = {
@@ -20760,11 +20742,10 @@ var Hand = React.createClass({
     displayName: 'Hand',
 
     render: function () {
+        var handleClick = this.props.handleClick;
+
         var n = 3;
         var item = this.props.items;
-        var handleClick = this.props.handleClick;
-        console.log(handleClick);
-        item.push(handleClick);
         var shuffled = item.sort(function () {
             return .5 - Math.random();
         });
@@ -20776,7 +20757,8 @@ var Hand = React.createClass({
                 name: el.name,
                 damage: el.damage,
                 health: el.health,
-                handleClick: el.handleClick
+
+                click: handleClick
             });
         });
         return React.createElement(

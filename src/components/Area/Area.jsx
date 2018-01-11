@@ -5,7 +5,16 @@ var Card = require('../Card/Card');
 
 var Area = React.createClass({
     render: function () {
-        return <div className={css.root} onClick={this.props.printMsg.bind(null, 'suka')}></div>
+        var itemData = this.props.arr;
+        return <div className={css.root}>
+            {
+                itemData.map(function (el, index) {
+                    return <Card
+                            key={index}
+                    />
+                })
+            }
+        </div>
     }
 });
 

@@ -38,20 +38,27 @@ var App = React.createClass({
                     damage: 2,
                     health: 7
                 }
-            ]
+            ],
+
+            itemData: []
         }
     },
-
-    printMsg: function (msg) {
-        console.log(msg);
+    handleClick: function () {
+        var text = this.state.text;
+        var itemData = this.state.itemData;
+        itemData.push(text);
+        this.setState({
+            itemData: itemData
+        })
     },
 
     render: function () {
         var data = this.state.data;
+        var itemData = this.state.itemData;
         return (
             <div>
-                <Area printMsg={this.printMsg} />
-                <Hand items={data}/>
+                <Area items={data} arr={itemData} handleClick={this.handleClick} />
+                <Hand handleClick={this.handleClick} items={data}/>
             </div>
         )
     }
