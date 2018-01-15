@@ -9,30 +9,35 @@ var App = React.createClass({
         return {
             data: [
                 {
+                    id: 0,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/3/33/S_luchnik_dzara.jpg',
                     name: 'Лучник Дзара',
                     damage: 1,
                     health: 7
                 },
                 {
+                    id: 1,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/3/37/S_amazonka.jpg',
                     name: 'Амазонка',
                     damage: 1,
                     health: 5
                 },
                 {
+                    id: 2,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/6/6b/S_kulhan.jpg',
                     name: 'Кулхан',
                     damage: 2,
                     health: 5
                 },
                 {
+                    id: 3,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/8/82/S_luchnik_toa-dana.jpg',
                     name: 'Лучник Тоа-Дана',
                     damage: 2,
                     health: 6
                 },
                 {
+                    id: 4,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/e/e0/S_ork_voevoda.jpg',
                     name: 'Орк-воевода',
                     damage: 2,
@@ -44,12 +49,15 @@ var App = React.createClass({
         }
     },
     handleClick: function () {
-        var text = this.state.text;
+        var data = this.state.data;
+        var id = this.state.data[0].id;
+        console.log(id);
         var itemData = this.state.itemData;
-        itemData.push(text);
-        this.setState({
-            itemData: itemData
-        })
+        itemData.push(data);
+            this.setState({
+                itemData: data
+            })
+
     },
 
     render: function () {

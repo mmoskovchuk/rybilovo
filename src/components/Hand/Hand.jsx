@@ -15,6 +15,7 @@ var Hand = React.createClass({
         var cardsList = selected.map(function (el, index) {
             return <Card
                 key={index}
+                id={el.id}
                 img={el.img}
                 name={el.name}
                 damage={el.damage}

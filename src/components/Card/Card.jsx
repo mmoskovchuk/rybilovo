@@ -3,7 +3,7 @@ var css = require('./card.styl');
 
 var Card = React.createClass({
     render: function () {
-        return <div className={[css.root]} onClick={this.props.click}>
+        return <div className={[css.root]} onClick={this.props.click} id={this.props.id}>
             <img className={[css.root__img]} src={this.props.img} alt={this.props.name}/>
             <div className={[css.root__name]}>{this.props.name}</div>
             <div className={[css.root__damage]}>{this.props.damage}</div>
