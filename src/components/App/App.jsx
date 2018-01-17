@@ -48,14 +48,17 @@ var App = React.createClass({
             itemData: []
         }
     },
-    handleClick: function () {
-        var data = this.state.data;
-        var id = this.state.data[0].id;
-        console.log(id);
+    handleClick: function (e) {
+        var idCode = e.target.id;
+        var idTrue = this.state.data[idCode].id;
+        console.log('idCode: '+idCode);
+        console.log('idTrue: '+idTrue);
+        var dataNew = this.state.data[idCode];
+        console.log(dataNew);
         var itemData = this.state.itemData;
-        itemData.push(data);
+        itemData.push(dataNew);
             this.setState({
-                itemData: data
+                dataNew
             })
 
     },
@@ -63,10 +66,13 @@ var App = React.createClass({
     render: function () {
         var data = this.state.data;
         var itemData = this.state.itemData;
+        var shuffled = data.sort(function() {
+            return .5 - Math.random()
+        });
         return (
             <div>
                 <Area items={data} arr={itemData} handleClick={this.handleClick} />
-                <Hand handleClick={this.handleClick} items={data}/>
+                <Hand handleClick={this.handleClick} items={shuffled}/>
             </div>
         )
     }

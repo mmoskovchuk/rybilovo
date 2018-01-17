@@ -11281,23 +11281,23 @@ var Card = React.createClass({
         return React.createElement(
             'div',
             { className: [css.root], onClick: this.props.click, id: this.props.id },
-            React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name }),
+            React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name, id: this.props.id }),
             React.createElement(
                 'div',
-                { className: [css.root__name] },
+                { className: [css.root__name], id: this.props.id },
                 this.props.name
             ),
             React.createElement(
                 'div',
-                { className: [css.root__damage] },
+                { className: [css.root__damage], id: this.props.id },
                 this.props.damage
             ),
             React.createElement(
                 'div',
-                { className: [css.root__health] },
+                { className: [css.root__health], id: this.props.id },
                 React.createElement(
                     'span',
-                    null,
+                    { id: this.props.id },
                     '\u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435: '
                 ),
                 this.props.health
@@ -20448,25 +20448,31 @@ var App = React.createClass({
             itemData: []
         };
     },
-    handleClick: function () {
-        var data = this.state.data;
-        var id = this.state.data[0].id;
-        console.log(id);
+    handleClick: function (e) {
+        var idCode = e.target.id;
+        var idTrue = this.state.data[idCode].id;
+        console.log('idCode: ' + idCode);
+        console.log('idTrue: ' + idTrue);
+        var dataNew = this.state.data[idCode];
+        console.log(dataNew);
         var itemData = this.state.itemData;
-        itemData.push(data);
+        itemData.push(dataNew);
         this.setState({
-            itemData: data
+            dataNew
         });
     },
 
     render: function () {
         var data = this.state.data;
         var itemData = this.state.itemData;
+        var shuffled = data.sort(function () {
+            return .5 - Math.random();
+        });
         return React.createElement(
             'div',
             null,
             React.createElement(Area, { items: data, arr: itemData, handleClick: this.handleClick }),
-            React.createElement(Hand, { handleClick: this.handleClick, items: data })
+            React.createElement(Hand, { handleClick: this.handleClick, items: shuffled })
         );
     }
 });
@@ -20760,10 +20766,7 @@ var Hand = React.createClass({
 
         var n = 3;
         var item = this.props.items;
-        var shuffled = item.sort(function () {
-            return .5 - Math.random();
-        });
-        var selected = shuffled.slice(0, n);
+        var selected = item.slice(0, n);
         var cardsList = selected.map(function (el, index) {
             return React.createElement(Card, {
                 key: index,

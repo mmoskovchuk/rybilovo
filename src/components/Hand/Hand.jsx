@@ -8,10 +8,7 @@ var Hand = React.createClass({
 
         var n = 3;
         var item = this.props.items;
-        var shuffled = item.sort(function() {
-            return .5 - Math.random()
-        });
-        var selected=shuffled.slice(0,n);
+        var selected=item.slice(0,n);
         var cardsList = selected.map(function (el, index) {
             return <Card
                 key={index}
