@@ -9,14 +9,14 @@ var App = React.createClass({
         return {
             data: [
                 {
-                    id: 0,
+                    id: 11,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/3/33/S_luchnik_dzara.jpg',
                     name: 'Лучник Дзара',
                     damage: 1,
                     health: 7
                 },
                 {
-                    id: 1,
+                    id: 14,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/3/37/S_amazonka.jpg',
                     name: 'Амазонка',
                     damage: 1,
@@ -30,14 +30,14 @@ var App = React.createClass({
                     health: 5
                 },
                 {
-                    id: 3,
+                    id: 3444,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/8/82/S_luchnik_toa-dana.jpg',
                     name: 'Лучник Тоа-Дана',
                     damage: 2,
                     health: 6
                 },
                 {
-                    id: 4,
+                    id: 65324,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/e/e0/S_ork_voevoda.jpg',
                     name: 'Орк-воевода',
                     damage: 2,
@@ -45,33 +45,37 @@ var App = React.createClass({
                 }
             ],
 
-            itemData: []
+            areaCard: []
         }
     },
-    handleClick: function (e) {
-        var idCode = e.target.id;
-        var idTrue = this.state.data[idCode].id;
-        console.log('idCode: '+idCode);
-        console.log('idTrue: '+idTrue);
-        var dataNew = this.state.data[idCode];
-        console.log(dataNew);
-        var itemData = this.state.itemData;
-        itemData.push(dataNew);
-            this.setState({
-                dataNew
-            })
 
+    handleClick: function (cardId) {
+        var cardsList = this.state.data;
+        var areaCards = this.state.areaCard;
+
+        for (var i = 0; i < cardsList.length; i++) {
+            if (this.state.data[i].id === cardId) {
+                    areaCards.push(this.state.data[i]);
+            }
+        }
+
+        this.setState({
+            areaCard: areaCards
+        });
+        if (areaCards.length === 4) {
+            this.handleClick = false;
+        }
     },
 
     render: function () {
         var data = this.state.data;
-        var itemData = this.state.itemData;
+        var areaCard = this.state.areaCard;
         var shuffled = data.sort(function() {
             return .5 - Math.random()
         });
         return (
             <div>
-                <Area items={data} arr={itemData} handleClick={this.handleClick} />
+                <Area items={data} arr={areaCard} handleClick={this.handleClick} />
                 <Hand handleClick={this.handleClick} items={shuffled}/>
             </div>
         )
