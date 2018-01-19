@@ -11273,35 +11273,39 @@ module.exports = ReactElementValidator;
 
 var React = __webpack_require__(18);
 var css = __webpack_require__(169);
-
+var counter = [];
 var Card = React.createClass({
     displayName: 'Card',
 
     onClick: function () {
         this.props.click(this.props.id);
+        counter.push(counter);
+        if (counter.length === 4) {
+            this.onClick = false;
+        }
     },
 
     render: function () {
         return React.createElement(
             'div',
             { className: [css.root], onClick: this.onClick },
-            React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name, id: this.props.id }),
+            React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name }),
             React.createElement(
                 'div',
-                { className: [css.root__name], id: this.props.id },
+                { className: [css.root__name] },
                 this.props.name
             ),
             React.createElement(
                 'div',
-                { className: [css.root__damage], id: this.props.id },
+                { className: [css.root__damage] },
                 this.props.damage
             ),
             React.createElement(
                 'div',
-                { className: [css.root__health], id: this.props.id },
+                { className: [css.root__health] },
                 React.createElement(
                     'span',
-                    { id: this.props.id },
+                    null,
                     '\u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435: '
                 ),
                 this.props.health
@@ -20466,21 +20470,22 @@ var App = React.createClass({
         this.setState({
             areaCard: areaCards
         });
-        if (areaCards.length === 4) {
-            this.handleClick = false;
-        }
     },
 
     render: function () {
         var data = this.state.data;
         var areaCard = this.state.areaCard;
-        var shuffled = data.sort(function () {
+        //three cards into hand
+        var n = 3;
+        var selected = data.slice(0, n);
+        //shuffled cards
+        var shuffled = selected.sort(function () {
             return .5 - Math.random();
         });
         return React.createElement(
             'div',
             null,
-            React.createElement(Area, { items: data, arr: areaCard, handleClick: this.handleClick }),
+            React.createElement(Area, { arr: areaCard, handleClick: this.handleClick }),
             React.createElement(Hand, { handleClick: this.handleClick, items: shuffled })
         );
     }
@@ -20640,8 +20645,6 @@ var Area = React.createClass({
 
     render: function () {
         var areaCard = this.props.arr;
-        //console.log(this.props.arr);
-        //console.log(this.props.items);
         return React.createElement(
             'div',
             { className: css.root },
@@ -20772,11 +20775,8 @@ var Hand = React.createClass({
 
     render: function () {
         var handleClick = this.props.handleClick;
-
-        var n = 3;
         var item = this.props.items;
-        var selected = item.slice(0, n);
-        var cardsList = selected.map(function (el, index) {
+        var cardsList = item.map(function (el, index) {
             return React.createElement(Card, {
                 key: index,
                 id: el.id,

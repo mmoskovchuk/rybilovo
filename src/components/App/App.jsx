@@ -62,20 +62,21 @@ var App = React.createClass({
         this.setState({
             areaCard: areaCards
         });
-        if (areaCards.length === 4) {
-            this.handleClick = false;
-        }
     },
 
     render: function () {
         var data = this.state.data;
         var areaCard = this.state.areaCard;
-        var shuffled = data.sort(function() {
+        //three cards into hand
+        var n = 3;
+        var selected=data.slice(0,n);
+        //shuffled cards
+        var shuffled = selected.sort(function() {
             return .5 - Math.random()
         });
         return (
             <div>
-                <Area items={data} arr={areaCard} handleClick={this.handleClick} />
+                <Area arr={areaCard} handleClick={this.handleClick} />
                 <Hand handleClick={this.handleClick} items={shuffled}/>
             </div>
         )

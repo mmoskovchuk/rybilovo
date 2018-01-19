@@ -5,11 +5,8 @@ var Card = require('../Card/Card');
 var Hand = React.createClass({
     render: function () {
         var handleClick = this.props.handleClick;
-
-        var n = 3;
         var item = this.props.items;
-        var selected=item.slice(0,n);
-        var cardsList = selected.map(function (el, index) {
+        var cardsList = item.map(function (el, index) {
             return <Card
                 key={index}
                 id={el.id}
