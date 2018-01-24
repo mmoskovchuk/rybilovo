@@ -1,14 +1,8 @@
 var React = require('react');
 var css = require('./card.styl');
-var counter = [];
 var Card = React.createClass({
     onClick: function() {
         this.props.click(this.props.id);
-        counter.push(counter);
-                if (counter.length === 4) {
-                        this.onClick = false;
-                }
-
     },
 
 

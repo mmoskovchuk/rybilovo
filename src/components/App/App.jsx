@@ -30,14 +30,14 @@ var App = React.createClass({
                     health: 5
                 },
                 {
-                    id: 3444,
+                    id: 3,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/8/82/S_luchnik_toa-dana.jpg',
                     name: 'Лучник Тоа-Дана',
                     damage: 2,
                     health: 6
                 },
                 {
-                    id: 65324,
+                    id: 7,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/e/e0/S_ork_voevoda.jpg',
                     name: 'Орк-воевода',
                     damage: 2,
@@ -52,12 +52,14 @@ var App = React.createClass({
     handleClick: function (cardId) {
         var cardsList = this.state.data;
         var areaCards = this.state.areaCard;
-
         for (var i = 0; i < cardsList.length; i++) {
             if (this.state.data[i].id === cardId) {
+                if (areaCards.length < 4) {
                     areaCards.push(this.state.data[i]);
+                }
             }
         }
+
 
         this.setState({
             areaCard: areaCards
@@ -67,17 +69,17 @@ var App = React.createClass({
     render: function () {
         var data = this.state.data;
         var areaCard = this.state.areaCard;
-        //three cards into hand
-        var n = 3;
-        var selected=data.slice(0,n);
         //shuffled cards
-        var shuffled = selected.sort(function() {
+        var shuffled = data.sort(function() {
             return .5 - Math.random()
         });
+        //three cards into hand
+        var n = 3;
+        var selected=shuffled.slice(0,n);
         return (
             <div>
                 <Area arr={areaCard} handleClick={this.handleClick} />
-                <Hand handleClick={this.handleClick} items={shuffled}/>
+                <Hand handleClick={this.handleClick} items={selected}/>
             </div>
         )
     }
