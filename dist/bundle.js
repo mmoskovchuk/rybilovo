@@ -20409,6 +20409,7 @@ var React = __webpack_require__(18);
 var css = __webpack_require__(163);
 var Area = __webpack_require__(166);
 var Hand = __webpack_require__(171);
+var Enemy = __webpack_require__(176);
 
 var App = React.createClass({
     displayName: 'App',
@@ -20482,6 +20483,7 @@ var App = React.createClass({
             'div',
             null,
             React.createElement(Area, { arr: areaCard, handleClick: this.handleClick }),
+            React.createElement(Enemy, { arr: areaCard, handleClick: this.handleClick }),
             React.createElement(Hand, { handleClick: this.handleClick, items: selected })
         );
     }
@@ -20636,8 +20638,8 @@ var React = __webpack_require__(18);
 var css = __webpack_require__(167);
 var Card = __webpack_require__(88);
 
-var Area = React.createClass({
-    displayName: 'Area',
+var Enemy = React.createClass({
+    displayName: 'Enemy',
 
     render: function () {
         var areaCard = this.props.arr;
@@ -20658,7 +20660,7 @@ var Area = React.createClass({
     }
 });
 
-module.exports = Area;
+module.exports = Enemy;
 
 /***/ }),
 /* 167 */
@@ -20885,6 +20887,85 @@ exports.push([module.i, "body {\n  background-color: #c0c0c0;\n  font-size: 17px
 
 // exports
 
+
+/***/ }),
+/* 176 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(18);
+var css = __webpack_require__(177);
+var Card = __webpack_require__(88);
+
+var Area = React.createClass({
+    displayName: 'Area',
+
+    render: function () {
+        var areaCard = this.props.arr;
+        return React.createElement(
+            'div',
+            { className: css.root },
+            areaCard.map(function (el, index) {
+                return React.createElement(Card, {
+                    key: index,
+                    id: el.id,
+                    img: el.img,
+                    name: el.name,
+                    damage: el.damage,
+                    health: el.health
+                });
+            })
+        );
+    }
+});
+
+module.exports = Area;
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(178);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(25)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../node_modules/css-loader/index.js??ref--1-1!../../../node_modules/stylus-loader/index.js!./enemy.styl", function() {
+			var newContent = require("!!../../../node_modules/css-loader/index.js??ref--1-1!../../../node_modules/stylus-loader/index.js!./enemy.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(24)();
+// imports
+
+
+// module
+exports.push([module.i, ".enemy__root {\n  padding: 20px;\n  height: auto;\n  margin: 20px 0 0 0;\n  text-align: center;\n  border: 1px solid;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n}\n", ""]);
+
+// exports
+exports.locals = {
+	"root": "enemy__root"
+};
 
 /***/ })
 /******/ ]);

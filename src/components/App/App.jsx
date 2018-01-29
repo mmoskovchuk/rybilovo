@@ -2,6 +2,7 @@ var React = require('react');
 var css = require('./app.styl');
 var Area = require('../Area/Area');
 var Hand = require('../Hand/Hand');
+var Enemy = require('../Enemy/Enemy');
 
 var App = React.createClass({
     /*установка состояния*/
@@ -79,6 +80,7 @@ var App = React.createClass({
         return (
             <div>
                 <Area arr={areaCard} handleClick={this.handleClick} />
+                <Enemy arr={areaCard} handleClick={this.handleClick} />
                 <Hand handleClick={this.handleClick} items={selected}/>
             </div>
         )

@@ -1,9 +1,9 @@
 var React = require('react');
-var css = require('./area.styl');
+var css = require('./enemy.styl');
 var Card = require('../Card/Card');
 
 
-var Enemy = React.createClass({
+var Area = React.createClass({
     render: function () {
         var areaCard = this.props.arr;
         return <div className={css.root}>
@@ -23,4 +23,4 @@ var Enemy = React.createClass({
     }
 });
 
-module.exports = Enemy;
+module.exports = Area;
