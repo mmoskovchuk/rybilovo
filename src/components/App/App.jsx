@@ -46,25 +46,33 @@ var App = React.createClass({
                 }
             ],
 
-            areaCard: []
+            areaCard: [],
+            enemyCard: []
         }
     },
 
     handleClick: function (cardId) {
         var cardsList = this.state.data;
         var areaCards = this.state.areaCard;
+        var enemyCards = this.state.enemyCard;
         for (var i = 0; i < cardsList.length; i++) {
             if (this.state.data[i].id === cardId) {
                 if (areaCards.length < 4) {
                     areaCards.push(this.state.data[i]);
                 }
             }
+            enemyCards.push(this.state.data[i]);
         }
 
 
         this.setState({
-            areaCard: areaCards
+            areaCard: areaCards,
+            enemyCards: enemyCards
         });
+
+
+
+        console.log(enemyCards);
     },
 
     render: function () {

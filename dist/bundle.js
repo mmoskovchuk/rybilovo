@@ -490,20 +490,20 @@ module.exports = ExecutionEnvironment;
 var DOMProperty = __webpack_require__(14);
 var ReactBrowserEventEmitter = __webpack_require__(29);
 var ReactCurrentOwner = __webpack_require__(10);
-var ReactDOMFeatureFlags = __webpack_require__(64);
+var ReactDOMFeatureFlags = __webpack_require__(65);
 var ReactElement = __webpack_require__(6);
-var ReactEmptyComponentRegistry = __webpack_require__(65);
-var ReactInstanceHandles = __webpack_require__(17);
-var ReactInstanceMap = __webpack_require__(20);
-var ReactMarkupChecksum = __webpack_require__(67);
+var ReactEmptyComponentRegistry = __webpack_require__(66);
+var ReactInstanceHandles = __webpack_require__(18);
+var ReactInstanceMap = __webpack_require__(22);
+var ReactMarkupChecksum = __webpack_require__(68);
 var ReactPerf = __webpack_require__(7);
 var ReactReconciler = __webpack_require__(15);
 var ReactUpdateQueue = __webpack_require__(40);
 var ReactUpdates = __webpack_require__(8);
 
 var assign = __webpack_require__(2);
-var emptyObject = __webpack_require__(21);
-var containsNode = __webpack_require__(68);
+var emptyObject = __webpack_require__(23);
+var containsNode = __webpack_require__(69);
 var instantiateReactComponent = __webpack_require__(42);
 var invariant = __webpack_require__(1);
 var setInnerHTML = __webpack_require__(27);
@@ -2804,6 +2804,16 @@ module.exports = SyntheticEvent;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+module.exports = __webpack_require__(90);
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -2818,7 +2828,7 @@ module.exports = SyntheticEvent;
 
 
 
-var ReactRootIndex = __webpack_require__(66);
+var ReactRootIndex = __webpack_require__(67);
 
 var invariant = __webpack_require__(1);
 
@@ -3109,591 +3119,7 @@ module.exports = ReactInstanceHandles;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = __webpack_require__(90);
-
-
-/***/ }),
 /* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule EventPluginHub
- */
-
-
-
-var EventPluginRegistry = __webpack_require__(59);
-var EventPluginUtils = __webpack_require__(96);
-var ReactErrorUtils = __webpack_require__(60);
-
-var accumulateInto = __webpack_require__(61);
-var forEachAccumulated = __webpack_require__(62);
-var invariant = __webpack_require__(1);
-var warning = __webpack_require__(3);
-
-/**
- * Internal store for event listeners
- */
-var listenerBank = {};
-
-/**
- * Internal queue of events that have accumulated their dispatches and are
- * waiting to have their dispatches executed.
- */
-var eventQueue = null;
-
-/**
- * Dispatches an event and releases it back into the pool, unless persistent.
- *
- * @param {?object} event Synthetic event to be dispatched.
- * @param {boolean} simulated If the event is simulated (changes exn behavior)
- * @private
- */
-var executeDispatchesAndRelease = function (event, simulated) {
-  if (event) {
-    EventPluginUtils.executeDispatchesInOrder(event, simulated);
-
-    if (!event.isPersistent()) {
-      event.constructor.release(event);
-    }
-  }
-};
-var executeDispatchesAndReleaseSimulated = function (e) {
-  return executeDispatchesAndRelease(e, true);
-};
-var executeDispatchesAndReleaseTopLevel = function (e) {
-  return executeDispatchesAndRelease(e, false);
-};
-
-/**
- * - `InstanceHandle`: [required] Module that performs logical traversals of DOM
- *   hierarchy given ids of the logical DOM elements involved.
- */
-var InstanceHandle = null;
-
-function validateInstanceHandle() {
-  var valid = InstanceHandle && InstanceHandle.traverseTwoPhase && InstanceHandle.traverseEnterLeave;
-  process.env.NODE_ENV !== 'production' ? warning(valid, 'InstanceHandle not injected before use!') : undefined;
-}
-
-/**
- * This is a unified interface for event plugins to be installed and configured.
- *
- * Event plugins can implement the following properties:
- *
- *   `extractEvents` {function(string, DOMEventTarget, string, object): *}
- *     Required. When a top-level event is fired, this method is expected to
- *     extract synthetic events that will in turn be queued and dispatched.
- *
- *   `eventTypes` {object}
- *     Optional, plugins that fire events must publish a mapping of registration
- *     names that are used to register listeners. Values of this mapping must
- *     be objects that contain `registrationName` or `phasedRegistrationNames`.
- *
- *   `executeDispatch` {function(object, function, string)}
- *     Optional, allows plugins to override how an event gets dispatched. By
- *     default, the listener is simply invoked.
- *
- * Each plugin that is injected into `EventsPluginHub` is immediately operable.
- *
- * @public
- */
-var EventPluginHub = {
-
-  /**
-   * Methods for injecting dependencies.
-   */
-  injection: {
-
-    /**
-     * @param {object} InjectedMount
-     * @public
-     */
-    injectMount: EventPluginUtils.injection.injectMount,
-
-    /**
-     * @param {object} InjectedInstanceHandle
-     * @public
-     */
-    injectInstanceHandle: function (InjectedInstanceHandle) {
-      InstanceHandle = InjectedInstanceHandle;
-      if (process.env.NODE_ENV !== 'production') {
-        validateInstanceHandle();
-      }
-    },
-
-    getInstanceHandle: function () {
-      if (process.env.NODE_ENV !== 'production') {
-        validateInstanceHandle();
-      }
-      return InstanceHandle;
-    },
-
-    /**
-     * @param {array} InjectedEventPluginOrder
-     * @public
-     */
-    injectEventPluginOrder: EventPluginRegistry.injectEventPluginOrder,
-
-    /**
-     * @param {object} injectedNamesToPlugins Map from names to plugin modules.
-     */
-    injectEventPluginsByName: EventPluginRegistry.injectEventPluginsByName
-
-  },
-
-  eventNameDispatchConfigs: EventPluginRegistry.eventNameDispatchConfigs,
-
-  registrationNameModules: EventPluginRegistry.registrationNameModules,
-
-  /**
-   * Stores `listener` at `listenerBank[registrationName][id]`. Is idempotent.
-   *
-   * @param {string} id ID of the DOM element.
-   * @param {string} registrationName Name of listener (e.g. `onClick`).
-   * @param {?function} listener The callback to store.
-   */
-  putListener: function (id, registrationName, listener) {
-    !(typeof listener === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected %s listener to be a function, instead got type %s', registrationName, typeof listener) : invariant(false) : undefined;
-
-    var bankForRegistrationName = listenerBank[registrationName] || (listenerBank[registrationName] = {});
-    bankForRegistrationName[id] = listener;
-
-    var PluginModule = EventPluginRegistry.registrationNameModules[registrationName];
-    if (PluginModule && PluginModule.didPutListener) {
-      PluginModule.didPutListener(id, registrationName, listener);
-    }
-  },
-
-  /**
-   * @param {string} id ID of the DOM element.
-   * @param {string} registrationName Name of listener (e.g. `onClick`).
-   * @return {?function} The stored callback.
-   */
-  getListener: function (id, registrationName) {
-    var bankForRegistrationName = listenerBank[registrationName];
-    return bankForRegistrationName && bankForRegistrationName[id];
-  },
-
-  /**
-   * Deletes a listener from the registration bank.
-   *
-   * @param {string} id ID of the DOM element.
-   * @param {string} registrationName Name of listener (e.g. `onClick`).
-   */
-  deleteListener: function (id, registrationName) {
-    var PluginModule = EventPluginRegistry.registrationNameModules[registrationName];
-    if (PluginModule && PluginModule.willDeleteListener) {
-      PluginModule.willDeleteListener(id, registrationName);
-    }
-
-    var bankForRegistrationName = listenerBank[registrationName];
-    // TODO: This should never be null -- when is it?
-    if (bankForRegistrationName) {
-      delete bankForRegistrationName[id];
-    }
-  },
-
-  /**
-   * Deletes all listeners for the DOM element with the supplied ID.
-   *
-   * @param {string} id ID of the DOM element.
-   */
-  deleteAllListeners: function (id) {
-    for (var registrationName in listenerBank) {
-      if (!listenerBank[registrationName][id]) {
-        continue;
-      }
-
-      var PluginModule = EventPluginRegistry.registrationNameModules[registrationName];
-      if (PluginModule && PluginModule.willDeleteListener) {
-        PluginModule.willDeleteListener(id, registrationName);
-      }
-
-      delete listenerBank[registrationName][id];
-    }
-  },
-
-  /**
-   * Allows registered plugins an opportunity to extract events from top-level
-   * native browser events.
-   *
-   * @param {string} topLevelType Record from `EventConstants`.
-   * @param {DOMEventTarget} topLevelTarget The listening component root node.
-   * @param {string} topLevelTargetID ID of `topLevelTarget`.
-   * @param {object} nativeEvent Native browser event.
-   * @return {*} An accumulation of synthetic events.
-   * @internal
-   */
-  extractEvents: function (topLevelType, topLevelTarget, topLevelTargetID, nativeEvent, nativeEventTarget) {
-    var events;
-    var plugins = EventPluginRegistry.plugins;
-    for (var i = 0; i < plugins.length; i++) {
-      // Not every plugin in the ordering may be loaded at runtime.
-      var possiblePlugin = plugins[i];
-      if (possiblePlugin) {
-        var extractedEvents = possiblePlugin.extractEvents(topLevelType, topLevelTarget, topLevelTargetID, nativeEvent, nativeEventTarget);
-        if (extractedEvents) {
-          events = accumulateInto(events, extractedEvents);
-        }
-      }
-    }
-    return events;
-  },
-
-  /**
-   * Enqueues a synthetic event that should be dispatched when
-   * `processEventQueue` is invoked.
-   *
-   * @param {*} events An accumulation of synthetic events.
-   * @internal
-   */
-  enqueueEvents: function (events) {
-    if (events) {
-      eventQueue = accumulateInto(eventQueue, events);
-    }
-  },
-
-  /**
-   * Dispatches all synthetic events on the event queue.
-   *
-   * @internal
-   */
-  processEventQueue: function (simulated) {
-    // Set `eventQueue` to null before processing it so that we can tell if more
-    // events get enqueued while processing.
-    var processingEventQueue = eventQueue;
-    eventQueue = null;
-    if (simulated) {
-      forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseSimulated);
-    } else {
-      forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
-    }
-    !!eventQueue ? process.env.NODE_ENV !== 'production' ? invariant(false, 'processEventQueue(): Additional events were enqueued while processing ' + 'an event queue. Support for this has not yet been implemented.') : invariant(false) : undefined;
-    // This would be a good time to rethrow if any of the event handlers threw.
-    ReactErrorUtils.rethrowCaughtError();
-  },
-
-  /**
-   * These are needed for tests only. Do not use!
-   */
-  __purge: function () {
-    listenerBank = {};
-  },
-
-  __getListenerBank: function () {
-    return listenerBank;
-  }
-
-};
-
-module.exports = EventPluginHub;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule ReactInstanceMap
- */
-
-
-
-/**
- * `ReactInstanceMap` maintains a mapping from a public facing stateful
- * instance (key) and the internal representation (value). This allows public
- * methods to accept the user facing instance as an argument and map them back
- * to internal methods.
- */
-
-// TODO: Replace this with ES6: var ReactInstanceMap = new Map();
-var ReactInstanceMap = {
-
-  /**
-   * This API should be called `delete` but we'd have to make sure to always
-   * transform these to strings for IE support. When this transform is fully
-   * supported we can rename it.
-   */
-  remove: function (key) {
-    key._reactInternalInstance = undefined;
-  },
-
-  get: function (key) {
-    return key._reactInternalInstance;
-  },
-
-  has: function (key) {
-    return key._reactInternalInstance !== undefined;
-  },
-
-  set: function (key, value) {
-    key._reactInternalInstance = value;
-  }
-
-};
-
-module.exports = ReactInstanceMap;
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule emptyObject
- */
-
-
-
-var emptyObject = {};
-
-if (process.env.NODE_ENV !== 'production') {
-  Object.freeze(emptyObject);
-}
-
-module.exports = emptyObject;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule EventPropagators
- */
-
-
-
-var EventConstants = __webpack_require__(11);
-var EventPluginHub = __webpack_require__(19);
-
-var warning = __webpack_require__(3);
-
-var accumulateInto = __webpack_require__(61);
-var forEachAccumulated = __webpack_require__(62);
-
-var PropagationPhases = EventConstants.PropagationPhases;
-var getListener = EventPluginHub.getListener;
-
-/**
- * Some event types have a notion of different registration names for different
- * "phases" of propagation. This finds listeners by a given phase.
- */
-function listenerAtPhase(id, event, propagationPhase) {
-  var registrationName = event.dispatchConfig.phasedRegistrationNames[propagationPhase];
-  return getListener(id, registrationName);
-}
-
-/**
- * Tags a `SyntheticEvent` with dispatched listeners. Creating this function
- * here, allows us to not have to bind or create functions for each event.
- * Mutating the event's members allows us to not have to create a wrapping
- * "dispatch" object that pairs the event with the listener.
- */
-function accumulateDirectionalDispatches(domID, upwards, event) {
-  if (process.env.NODE_ENV !== 'production') {
-    process.env.NODE_ENV !== 'production' ? warning(domID, 'Dispatching id must not be null') : undefined;
-  }
-  var phase = upwards ? PropagationPhases.bubbled : PropagationPhases.captured;
-  var listener = listenerAtPhase(domID, event, phase);
-  if (listener) {
-    event._dispatchListeners = accumulateInto(event._dispatchListeners, listener);
-    event._dispatchIDs = accumulateInto(event._dispatchIDs, domID);
-  }
-}
-
-/**
- * Collect dispatches (must be entirely collected before dispatching - see unit
- * tests). Lazily allocate the array to conserve memory.  We must loop through
- * each event and perform the traversal for each one. We cannot perform a
- * single traversal for the entire collection of events because each event may
- * have a different target.
- */
-function accumulateTwoPhaseDispatchesSingle(event) {
-  if (event && event.dispatchConfig.phasedRegistrationNames) {
-    EventPluginHub.injection.getInstanceHandle().traverseTwoPhase(event.dispatchMarker, accumulateDirectionalDispatches, event);
-  }
-}
-
-/**
- * Same as `accumulateTwoPhaseDispatchesSingle`, but skips over the targetID.
- */
-function accumulateTwoPhaseDispatchesSingleSkipTarget(event) {
-  if (event && event.dispatchConfig.phasedRegistrationNames) {
-    EventPluginHub.injection.getInstanceHandle().traverseTwoPhaseSkipTarget(event.dispatchMarker, accumulateDirectionalDispatches, event);
-  }
-}
-
-/**
- * Accumulates without regard to direction, does not look for phased
- * registration names. Same as `accumulateDirectDispatchesSingle` but without
- * requiring that the `dispatchMarker` be the same as the dispatched ID.
- */
-function accumulateDispatches(id, ignoredDirection, event) {
-  if (event && event.dispatchConfig.registrationName) {
-    var registrationName = event.dispatchConfig.registrationName;
-    var listener = getListener(id, registrationName);
-    if (listener) {
-      event._dispatchListeners = accumulateInto(event._dispatchListeners, listener);
-      event._dispatchIDs = accumulateInto(event._dispatchIDs, id);
-    }
-  }
-}
-
-/**
- * Accumulates dispatches on an `SyntheticEvent`, but only for the
- * `dispatchMarker`.
- * @param {SyntheticEvent} event
- */
-function accumulateDirectDispatchesSingle(event) {
-  if (event && event.dispatchConfig.registrationName) {
-    accumulateDispatches(event.dispatchMarker, null, event);
-  }
-}
-
-function accumulateTwoPhaseDispatches(events) {
-  forEachAccumulated(events, accumulateTwoPhaseDispatchesSingle);
-}
-
-function accumulateTwoPhaseDispatchesSkipTarget(events) {
-  forEachAccumulated(events, accumulateTwoPhaseDispatchesSingleSkipTarget);
-}
-
-function accumulateEnterLeaveDispatches(leave, enter, fromID, toID) {
-  EventPluginHub.injection.getInstanceHandle().traverseEnterLeave(fromID, toID, accumulateDispatches, leave, enter);
-}
-
-function accumulateDirectDispatches(events) {
-  forEachAccumulated(events, accumulateDirectDispatchesSingle);
-}
-
-/**
- * A small set of propagation patterns, each of which will accept a small amount
- * of information, and generate a set of "dispatch ready event objects" - which
- * are sets of events that have already been annotated with a set of dispatched
- * listener functions/ids. The API is designed this way to discourage these
- * propagation strategies from actually executing the dispatches, since we
- * always want to collect the entire set of dispatches before executing event a
- * single one.
- *
- * @constructor EventPropagators
- */
-var EventPropagators = {
-  accumulateTwoPhaseDispatches: accumulateTwoPhaseDispatches,
-  accumulateTwoPhaseDispatchesSkipTarget: accumulateTwoPhaseDispatchesSkipTarget,
-  accumulateDirectDispatches: accumulateDirectDispatches,
-  accumulateEnterLeaveDispatches: accumulateEnterLeaveDispatches
-};
-
-module.exports = EventPropagators;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule SyntheticUIEvent
- * @typechecks static-only
- */
-
-
-
-var SyntheticEvent = __webpack_require__(16);
-
-var getEventTarget = __webpack_require__(46);
-
-/**
- * @interface UIEvent
- * @see http://www.w3.org/TR/DOM-Level-3-Events/
- */
-var UIEventInterface = {
-  view: function (event) {
-    if (event.view) {
-      return event.view;
-    }
-
-    var target = getEventTarget(event);
-    if (target != null && target.window === target) {
-      // target is a window object
-      return target;
-    }
-
-    var doc = target.ownerDocument;
-    // TODO: Figure out why `ownerDocument` is sometimes undefined in IE8.
-    if (doc) {
-      return doc.defaultView || doc.parentWindow;
-    } else {
-      return window;
-    }
-  },
-  detail: function (event) {
-    return event.detail || 0;
-  }
-};
-
-/**
- * @param {object} dispatchConfig Configuration used to dispatch this event.
- * @param {string} dispatchMarker Marker identifying the event target.
- * @param {object} nativeEvent Native browser event.
- * @extends {SyntheticEvent}
- */
-function SyntheticUIEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget) {
-  SyntheticEvent.call(this, dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget);
-}
-
-SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
-
-module.exports = SyntheticUIEvent;
-
-/***/ }),
-/* 24 */
 /***/ (function(module, exports) {
 
 /*
@@ -3749,7 +3175,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 25 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -4121,6 +3547,580 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
+/* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule EventPluginHub
+ */
+
+
+
+var EventPluginRegistry = __webpack_require__(60);
+var EventPluginUtils = __webpack_require__(96);
+var ReactErrorUtils = __webpack_require__(61);
+
+var accumulateInto = __webpack_require__(62);
+var forEachAccumulated = __webpack_require__(63);
+var invariant = __webpack_require__(1);
+var warning = __webpack_require__(3);
+
+/**
+ * Internal store for event listeners
+ */
+var listenerBank = {};
+
+/**
+ * Internal queue of events that have accumulated their dispatches and are
+ * waiting to have their dispatches executed.
+ */
+var eventQueue = null;
+
+/**
+ * Dispatches an event and releases it back into the pool, unless persistent.
+ *
+ * @param {?object} event Synthetic event to be dispatched.
+ * @param {boolean} simulated If the event is simulated (changes exn behavior)
+ * @private
+ */
+var executeDispatchesAndRelease = function (event, simulated) {
+  if (event) {
+    EventPluginUtils.executeDispatchesInOrder(event, simulated);
+
+    if (!event.isPersistent()) {
+      event.constructor.release(event);
+    }
+  }
+};
+var executeDispatchesAndReleaseSimulated = function (e) {
+  return executeDispatchesAndRelease(e, true);
+};
+var executeDispatchesAndReleaseTopLevel = function (e) {
+  return executeDispatchesAndRelease(e, false);
+};
+
+/**
+ * - `InstanceHandle`: [required] Module that performs logical traversals of DOM
+ *   hierarchy given ids of the logical DOM elements involved.
+ */
+var InstanceHandle = null;
+
+function validateInstanceHandle() {
+  var valid = InstanceHandle && InstanceHandle.traverseTwoPhase && InstanceHandle.traverseEnterLeave;
+  process.env.NODE_ENV !== 'production' ? warning(valid, 'InstanceHandle not injected before use!') : undefined;
+}
+
+/**
+ * This is a unified interface for event plugins to be installed and configured.
+ *
+ * Event plugins can implement the following properties:
+ *
+ *   `extractEvents` {function(string, DOMEventTarget, string, object): *}
+ *     Required. When a top-level event is fired, this method is expected to
+ *     extract synthetic events that will in turn be queued and dispatched.
+ *
+ *   `eventTypes` {object}
+ *     Optional, plugins that fire events must publish a mapping of registration
+ *     names that are used to register listeners. Values of this mapping must
+ *     be objects that contain `registrationName` or `phasedRegistrationNames`.
+ *
+ *   `executeDispatch` {function(object, function, string)}
+ *     Optional, allows plugins to override how an event gets dispatched. By
+ *     default, the listener is simply invoked.
+ *
+ * Each plugin that is injected into `EventsPluginHub` is immediately operable.
+ *
+ * @public
+ */
+var EventPluginHub = {
+
+  /**
+   * Methods for injecting dependencies.
+   */
+  injection: {
+
+    /**
+     * @param {object} InjectedMount
+     * @public
+     */
+    injectMount: EventPluginUtils.injection.injectMount,
+
+    /**
+     * @param {object} InjectedInstanceHandle
+     * @public
+     */
+    injectInstanceHandle: function (InjectedInstanceHandle) {
+      InstanceHandle = InjectedInstanceHandle;
+      if (process.env.NODE_ENV !== 'production') {
+        validateInstanceHandle();
+      }
+    },
+
+    getInstanceHandle: function () {
+      if (process.env.NODE_ENV !== 'production') {
+        validateInstanceHandle();
+      }
+      return InstanceHandle;
+    },
+
+    /**
+     * @param {array} InjectedEventPluginOrder
+     * @public
+     */
+    injectEventPluginOrder: EventPluginRegistry.injectEventPluginOrder,
+
+    /**
+     * @param {object} injectedNamesToPlugins Map from names to plugin modules.
+     */
+    injectEventPluginsByName: EventPluginRegistry.injectEventPluginsByName
+
+  },
+
+  eventNameDispatchConfigs: EventPluginRegistry.eventNameDispatchConfigs,
+
+  registrationNameModules: EventPluginRegistry.registrationNameModules,
+
+  /**
+   * Stores `listener` at `listenerBank[registrationName][id]`. Is idempotent.
+   *
+   * @param {string} id ID of the DOM element.
+   * @param {string} registrationName Name of listener (e.g. `onClick`).
+   * @param {?function} listener The callback to store.
+   */
+  putListener: function (id, registrationName, listener) {
+    !(typeof listener === 'function') ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Expected %s listener to be a function, instead got type %s', registrationName, typeof listener) : invariant(false) : undefined;
+
+    var bankForRegistrationName = listenerBank[registrationName] || (listenerBank[registrationName] = {});
+    bankForRegistrationName[id] = listener;
+
+    var PluginModule = EventPluginRegistry.registrationNameModules[registrationName];
+    if (PluginModule && PluginModule.didPutListener) {
+      PluginModule.didPutListener(id, registrationName, listener);
+    }
+  },
+
+  /**
+   * @param {string} id ID of the DOM element.
+   * @param {string} registrationName Name of listener (e.g. `onClick`).
+   * @return {?function} The stored callback.
+   */
+  getListener: function (id, registrationName) {
+    var bankForRegistrationName = listenerBank[registrationName];
+    return bankForRegistrationName && bankForRegistrationName[id];
+  },
+
+  /**
+   * Deletes a listener from the registration bank.
+   *
+   * @param {string} id ID of the DOM element.
+   * @param {string} registrationName Name of listener (e.g. `onClick`).
+   */
+  deleteListener: function (id, registrationName) {
+    var PluginModule = EventPluginRegistry.registrationNameModules[registrationName];
+    if (PluginModule && PluginModule.willDeleteListener) {
+      PluginModule.willDeleteListener(id, registrationName);
+    }
+
+    var bankForRegistrationName = listenerBank[registrationName];
+    // TODO: This should never be null -- when is it?
+    if (bankForRegistrationName) {
+      delete bankForRegistrationName[id];
+    }
+  },
+
+  /**
+   * Deletes all listeners for the DOM element with the supplied ID.
+   *
+   * @param {string} id ID of the DOM element.
+   */
+  deleteAllListeners: function (id) {
+    for (var registrationName in listenerBank) {
+      if (!listenerBank[registrationName][id]) {
+        continue;
+      }
+
+      var PluginModule = EventPluginRegistry.registrationNameModules[registrationName];
+      if (PluginModule && PluginModule.willDeleteListener) {
+        PluginModule.willDeleteListener(id, registrationName);
+      }
+
+      delete listenerBank[registrationName][id];
+    }
+  },
+
+  /**
+   * Allows registered plugins an opportunity to extract events from top-level
+   * native browser events.
+   *
+   * @param {string} topLevelType Record from `EventConstants`.
+   * @param {DOMEventTarget} topLevelTarget The listening component root node.
+   * @param {string} topLevelTargetID ID of `topLevelTarget`.
+   * @param {object} nativeEvent Native browser event.
+   * @return {*} An accumulation of synthetic events.
+   * @internal
+   */
+  extractEvents: function (topLevelType, topLevelTarget, topLevelTargetID, nativeEvent, nativeEventTarget) {
+    var events;
+    var plugins = EventPluginRegistry.plugins;
+    for (var i = 0; i < plugins.length; i++) {
+      // Not every plugin in the ordering may be loaded at runtime.
+      var possiblePlugin = plugins[i];
+      if (possiblePlugin) {
+        var extractedEvents = possiblePlugin.extractEvents(topLevelType, topLevelTarget, topLevelTargetID, nativeEvent, nativeEventTarget);
+        if (extractedEvents) {
+          events = accumulateInto(events, extractedEvents);
+        }
+      }
+    }
+    return events;
+  },
+
+  /**
+   * Enqueues a synthetic event that should be dispatched when
+   * `processEventQueue` is invoked.
+   *
+   * @param {*} events An accumulation of synthetic events.
+   * @internal
+   */
+  enqueueEvents: function (events) {
+    if (events) {
+      eventQueue = accumulateInto(eventQueue, events);
+    }
+  },
+
+  /**
+   * Dispatches all synthetic events on the event queue.
+   *
+   * @internal
+   */
+  processEventQueue: function (simulated) {
+    // Set `eventQueue` to null before processing it so that we can tell if more
+    // events get enqueued while processing.
+    var processingEventQueue = eventQueue;
+    eventQueue = null;
+    if (simulated) {
+      forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseSimulated);
+    } else {
+      forEachAccumulated(processingEventQueue, executeDispatchesAndReleaseTopLevel);
+    }
+    !!eventQueue ? process.env.NODE_ENV !== 'production' ? invariant(false, 'processEventQueue(): Additional events were enqueued while processing ' + 'an event queue. Support for this has not yet been implemented.') : invariant(false) : undefined;
+    // This would be a good time to rethrow if any of the event handlers threw.
+    ReactErrorUtils.rethrowCaughtError();
+  },
+
+  /**
+   * These are needed for tests only. Do not use!
+   */
+  __purge: function () {
+    listenerBank = {};
+  },
+
+  __getListenerBank: function () {
+    return listenerBank;
+  }
+
+};
+
+module.exports = EventPluginHub;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactInstanceMap
+ */
+
+
+
+/**
+ * `ReactInstanceMap` maintains a mapping from a public facing stateful
+ * instance (key) and the internal representation (value). This allows public
+ * methods to accept the user facing instance as an argument and map them back
+ * to internal methods.
+ */
+
+// TODO: Replace this with ES6: var ReactInstanceMap = new Map();
+var ReactInstanceMap = {
+
+  /**
+   * This API should be called `delete` but we'd have to make sure to always
+   * transform these to strings for IE support. When this transform is fully
+   * supported we can rename it.
+   */
+  remove: function (key) {
+    key._reactInternalInstance = undefined;
+  },
+
+  get: function (key) {
+    return key._reactInternalInstance;
+  },
+
+  has: function (key) {
+    return key._reactInternalInstance !== undefined;
+  },
+
+  set: function (key, value) {
+    key._reactInternalInstance = value;
+  }
+
+};
+
+module.exports = ReactInstanceMap;
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule emptyObject
+ */
+
+
+
+var emptyObject = {};
+
+if (process.env.NODE_ENV !== 'production') {
+  Object.freeze(emptyObject);
+}
+
+module.exports = emptyObject;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule EventPropagators
+ */
+
+
+
+var EventConstants = __webpack_require__(11);
+var EventPluginHub = __webpack_require__(21);
+
+var warning = __webpack_require__(3);
+
+var accumulateInto = __webpack_require__(62);
+var forEachAccumulated = __webpack_require__(63);
+
+var PropagationPhases = EventConstants.PropagationPhases;
+var getListener = EventPluginHub.getListener;
+
+/**
+ * Some event types have a notion of different registration names for different
+ * "phases" of propagation. This finds listeners by a given phase.
+ */
+function listenerAtPhase(id, event, propagationPhase) {
+  var registrationName = event.dispatchConfig.phasedRegistrationNames[propagationPhase];
+  return getListener(id, registrationName);
+}
+
+/**
+ * Tags a `SyntheticEvent` with dispatched listeners. Creating this function
+ * here, allows us to not have to bind or create functions for each event.
+ * Mutating the event's members allows us to not have to create a wrapping
+ * "dispatch" object that pairs the event with the listener.
+ */
+function accumulateDirectionalDispatches(domID, upwards, event) {
+  if (process.env.NODE_ENV !== 'production') {
+    process.env.NODE_ENV !== 'production' ? warning(domID, 'Dispatching id must not be null') : undefined;
+  }
+  var phase = upwards ? PropagationPhases.bubbled : PropagationPhases.captured;
+  var listener = listenerAtPhase(domID, event, phase);
+  if (listener) {
+    event._dispatchListeners = accumulateInto(event._dispatchListeners, listener);
+    event._dispatchIDs = accumulateInto(event._dispatchIDs, domID);
+  }
+}
+
+/**
+ * Collect dispatches (must be entirely collected before dispatching - see unit
+ * tests). Lazily allocate the array to conserve memory.  We must loop through
+ * each event and perform the traversal for each one. We cannot perform a
+ * single traversal for the entire collection of events because each event may
+ * have a different target.
+ */
+function accumulateTwoPhaseDispatchesSingle(event) {
+  if (event && event.dispatchConfig.phasedRegistrationNames) {
+    EventPluginHub.injection.getInstanceHandle().traverseTwoPhase(event.dispatchMarker, accumulateDirectionalDispatches, event);
+  }
+}
+
+/**
+ * Same as `accumulateTwoPhaseDispatchesSingle`, but skips over the targetID.
+ */
+function accumulateTwoPhaseDispatchesSingleSkipTarget(event) {
+  if (event && event.dispatchConfig.phasedRegistrationNames) {
+    EventPluginHub.injection.getInstanceHandle().traverseTwoPhaseSkipTarget(event.dispatchMarker, accumulateDirectionalDispatches, event);
+  }
+}
+
+/**
+ * Accumulates without regard to direction, does not look for phased
+ * registration names. Same as `accumulateDirectDispatchesSingle` but without
+ * requiring that the `dispatchMarker` be the same as the dispatched ID.
+ */
+function accumulateDispatches(id, ignoredDirection, event) {
+  if (event && event.dispatchConfig.registrationName) {
+    var registrationName = event.dispatchConfig.registrationName;
+    var listener = getListener(id, registrationName);
+    if (listener) {
+      event._dispatchListeners = accumulateInto(event._dispatchListeners, listener);
+      event._dispatchIDs = accumulateInto(event._dispatchIDs, id);
+    }
+  }
+}
+
+/**
+ * Accumulates dispatches on an `SyntheticEvent`, but only for the
+ * `dispatchMarker`.
+ * @param {SyntheticEvent} event
+ */
+function accumulateDirectDispatchesSingle(event) {
+  if (event && event.dispatchConfig.registrationName) {
+    accumulateDispatches(event.dispatchMarker, null, event);
+  }
+}
+
+function accumulateTwoPhaseDispatches(events) {
+  forEachAccumulated(events, accumulateTwoPhaseDispatchesSingle);
+}
+
+function accumulateTwoPhaseDispatchesSkipTarget(events) {
+  forEachAccumulated(events, accumulateTwoPhaseDispatchesSingleSkipTarget);
+}
+
+function accumulateEnterLeaveDispatches(leave, enter, fromID, toID) {
+  EventPluginHub.injection.getInstanceHandle().traverseEnterLeave(fromID, toID, accumulateDispatches, leave, enter);
+}
+
+function accumulateDirectDispatches(events) {
+  forEachAccumulated(events, accumulateDirectDispatchesSingle);
+}
+
+/**
+ * A small set of propagation patterns, each of which will accept a small amount
+ * of information, and generate a set of "dispatch ready event objects" - which
+ * are sets of events that have already been annotated with a set of dispatched
+ * listener functions/ids. The API is designed this way to discourage these
+ * propagation strategies from actually executing the dispatches, since we
+ * always want to collect the entire set of dispatches before executing event a
+ * single one.
+ *
+ * @constructor EventPropagators
+ */
+var EventPropagators = {
+  accumulateTwoPhaseDispatches: accumulateTwoPhaseDispatches,
+  accumulateTwoPhaseDispatchesSkipTarget: accumulateTwoPhaseDispatchesSkipTarget,
+  accumulateDirectDispatches: accumulateDirectDispatches,
+  accumulateEnterLeaveDispatches: accumulateEnterLeaveDispatches
+};
+
+module.exports = EventPropagators;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule SyntheticUIEvent
+ * @typechecks static-only
+ */
+
+
+
+var SyntheticEvent = __webpack_require__(16);
+
+var getEventTarget = __webpack_require__(46);
+
+/**
+ * @interface UIEvent
+ * @see http://www.w3.org/TR/DOM-Level-3-Events/
+ */
+var UIEventInterface = {
+  view: function (event) {
+    if (event.view) {
+      return event.view;
+    }
+
+    var target = getEventTarget(event);
+    if (target != null && target.window === target) {
+      // target is a window object
+      return target;
+    }
+
+    var doc = target.ownerDocument;
+    // TODO: Figure out why `ownerDocument` is sometimes undefined in IE8.
+    if (doc) {
+      return doc.defaultView || doc.parentWindow;
+    } else {
+      return window;
+    }
+  },
+  detail: function (event) {
+    return event.detail || 0;
+  }
+};
+
+/**
+ * @param {object} dispatchConfig Configuration used to dispatch this event.
+ * @param {string} dispatchMarker Marker identifying the event target.
+ * @param {object} nativeEvent Native browser event.
+ * @extends {SyntheticEvent}
+ */
+function SyntheticUIEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget) {
+  SyntheticEvent.call(this, dispatchConfig, dispatchMarker, nativeEvent, nativeEventTarget);
+}
+
+SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
+
+module.exports = SyntheticUIEvent;
+
+/***/ }),
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4335,11 +4335,11 @@ module.exports = escapeTextContentForBrowser;
 
 
 var EventConstants = __webpack_require__(11);
-var EventPluginHub = __webpack_require__(19);
-var EventPluginRegistry = __webpack_require__(59);
+var EventPluginHub = __webpack_require__(21);
+var EventPluginRegistry = __webpack_require__(60);
 var ReactEventEmitterMixin = __webpack_require__(97);
 var ReactPerf = __webpack_require__(7);
-var ViewportMetrics = __webpack_require__(63);
+var ViewportMetrics = __webpack_require__(64);
 
 var assign = __webpack_require__(2);
 var isEventSupported = __webpack_require__(39);
@@ -4992,8 +4992,8 @@ module.exports = ReactPropTypeLocationNames;
 
 
 
-var SyntheticUIEvent = __webpack_require__(23);
-var ViewportMetrics = __webpack_require__(63);
+var SyntheticUIEvent = __webpack_require__(25);
+var ViewportMetrics = __webpack_require__(64);
 
 var getEventModifierState = __webpack_require__(47);
 
@@ -5396,7 +5396,7 @@ module.exports = ReactComponentBrowserEnvironment;
 
 
 
-var DOMChildrenOperations = __webpack_require__(56);
+var DOMChildrenOperations = __webpack_require__(57);
 var DOMPropertyOperations = __webpack_require__(36);
 var ReactMount = __webpack_require__(5);
 var ReactPerf = __webpack_require__(7);
@@ -5564,7 +5564,7 @@ module.exports = isEventSupported;
 
 var ReactCurrentOwner = __webpack_require__(10);
 var ReactElement = __webpack_require__(6);
-var ReactInstanceMap = __webpack_require__(20);
+var ReactInstanceMap = __webpack_require__(22);
 var ReactUpdates = __webpack_require__(8);
 
 var assign = __webpack_require__(2);
@@ -5928,8 +5928,8 @@ module.exports = CallbackQueue;
 
 
 var ReactCompositeComponent = __webpack_require__(103);
-var ReactEmptyComponent = __webpack_require__(69);
-var ReactNativeComponent = __webpack_require__(70);
+var ReactEmptyComponent = __webpack_require__(70);
+var ReactNativeComponent = __webpack_require__(71);
 
 var assign = __webpack_require__(2);
 var invariant = __webpack_require__(1);
@@ -6609,7 +6609,7 @@ module.exports = getEventModifierState;
 
 
 var ReactCurrentOwner = __webpack_require__(10);
-var ReactInstanceMap = __webpack_require__(20);
+var ReactInstanceMap = __webpack_require__(22);
 var ReactMount = __webpack_require__(5);
 
 var invariant = __webpack_require__(1);
@@ -6664,7 +6664,7 @@ module.exports = findDOMNode;
 
 
 
-var ReactPropTypes = __webpack_require__(77);
+var ReactPropTypes = __webpack_require__(78);
 var ReactPropTypeLocations = __webpack_require__(32);
 
 var invariant = __webpack_require__(1);
@@ -6852,7 +6852,7 @@ module.exports = getIteratorFn;
 
 var ReactCurrentOwner = __webpack_require__(10);
 var ReactElement = __webpack_require__(6);
-var ReactInstanceHandles = __webpack_require__(17);
+var ReactInstanceHandles = __webpack_require__(18);
 
 var getIteratorFn = __webpack_require__(50);
 var invariant = __webpack_require__(1);
@@ -7108,6 +7108,50 @@ module.exports = '0.14.9';
 /* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var React = __webpack_require__(17);
+var css = __webpack_require__(169);
+var Card = React.createClass({
+    displayName: 'Card',
+
+    onClick: function () {
+        this.props.click(this.props.id);
+    },
+
+    render: function () {
+        return React.createElement(
+            'div',
+            { className: [css.root], onClick: this.onClick },
+            React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name }),
+            React.createElement(
+                'div',
+                { className: [css.root__name] },
+                this.props.name
+            ),
+            React.createElement(
+                'div',
+                { className: [css.root__damage] },
+                this.props.damage
+            ),
+            React.createElement(
+                'div',
+                { className: [css.root__health] },
+                React.createElement(
+                    'span',
+                    null,
+                    '\u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435: '
+                ),
+                this.props.health
+            )
+        );
+    }
+});
+
+module.exports = Card;
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7125,9 +7169,9 @@ module.exports = '0.14.9';
 
 
 var ReactCurrentOwner = __webpack_require__(10);
-var ReactDOMTextComponent = __webpack_require__(55);
-var ReactDefaultInjection = __webpack_require__(71);
-var ReactInstanceHandles = __webpack_require__(17);
+var ReactDOMTextComponent = __webpack_require__(56);
+var ReactDefaultInjection = __webpack_require__(72);
+var ReactInstanceHandles = __webpack_require__(18);
 var ReactMount = __webpack_require__(5);
 var ReactPerf = __webpack_require__(7);
 var ReactReconciler = __webpack_require__(15);
@@ -7204,7 +7248,7 @@ module.exports = React;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7222,7 +7266,7 @@ module.exports = React;
 
 
 
-var DOMChildrenOperations = __webpack_require__(56);
+var DOMChildrenOperations = __webpack_require__(57);
 var DOMPropertyOperations = __webpack_require__(36);
 var ReactComponentBrowserEnvironment = __webpack_require__(37);
 var ReactMount = __webpack_require__(5);
@@ -7338,7 +7382,7 @@ module.exports = ReactDOMTextComponent;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7357,7 +7401,7 @@ module.exports = ReactDOMTextComponent;
 
 
 var Danger = __webpack_require__(91);
-var ReactMultiChildUpdateTypes = __webpack_require__(58);
+var ReactMultiChildUpdateTypes = __webpack_require__(59);
 var ReactPerf = __webpack_require__(7);
 
 var setInnerHTML = __webpack_require__(27);
@@ -7474,7 +7518,7 @@ module.exports = DOMChildrenOperations;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7576,7 +7620,7 @@ module.exports = getMarkupWrap;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7614,7 +7658,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 module.exports = ReactMultiChildUpdateTypes;
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7841,7 +7885,7 @@ module.exports = EventPluginRegistry;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7925,7 +7969,7 @@ module.exports = ReactErrorUtils;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7991,7 +8035,7 @@ module.exports = accumulateInto;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8026,7 +8070,7 @@ var forEachAccumulated = function (arr, cb, scope) {
 module.exports = forEachAccumulated;
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8059,7 +8103,7 @@ var ViewportMetrics = {
 module.exports = ViewportMetrics;
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8083,7 +8127,7 @@ var ReactDOMFeatureFlags = {
 module.exports = ReactDOMFeatureFlags;
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8137,7 +8181,7 @@ var ReactEmptyComponentRegistry = {
 module.exports = ReactEmptyComponentRegistry;
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8172,7 +8216,7 @@ var ReactRootIndex = {
 module.exports = ReactRootIndex;
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8223,7 +8267,7 @@ var ReactMarkupChecksum = {
 module.exports = ReactMarkupChecksum;
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8284,7 +8328,7 @@ function containsNode(_x, _x2) {
 module.exports = containsNode;
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8302,7 +8346,7 @@ module.exports = containsNode;
 
 
 var ReactElement = __webpack_require__(6);
-var ReactEmptyComponentRegistry = __webpack_require__(65);
+var ReactEmptyComponentRegistry = __webpack_require__(66);
 var ReactReconciler = __webpack_require__(15);
 
 var assign = __webpack_require__(2);
@@ -8345,7 +8389,7 @@ ReactEmptyComponent.injection = ReactEmptyComponentInjection;
 module.exports = ReactEmptyComponent;
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8446,7 +8490,7 @@ module.exports = ReactNativeComponent;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8472,12 +8516,12 @@ var ExecutionEnvironment = __webpack_require__(4);
 var HTMLDOMPropertyConfig = __webpack_require__(112);
 var ReactBrowserComponentMixin = __webpack_require__(113);
 var ReactComponentBrowserEnvironment = __webpack_require__(37);
-var ReactDefaultBatchingStrategy = __webpack_require__(74);
+var ReactDefaultBatchingStrategy = __webpack_require__(75);
 var ReactDOMComponent = __webpack_require__(114);
-var ReactDOMTextComponent = __webpack_require__(55);
+var ReactDOMTextComponent = __webpack_require__(56);
 var ReactEventListener = __webpack_require__(130);
 var ReactInjection = __webpack_require__(132);
-var ReactInstanceHandles = __webpack_require__(17);
+var ReactInstanceHandles = __webpack_require__(18);
 var ReactMount = __webpack_require__(5);
 var ReactReconcileTransaction = __webpack_require__(133);
 var SelectEventPlugin = __webpack_require__(136);
@@ -8550,7 +8594,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8589,7 +8633,7 @@ function getTextContentAccessor() {
 module.exports = getTextContentAccessor;
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8635,7 +8679,7 @@ function isTextInputElement(elem) {
 module.exports = isTextInputElement;
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8708,7 +8752,7 @@ var ReactDefaultBatchingStrategy = {
 module.exports = ReactDefaultBatchingStrategy;
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8740,7 +8784,7 @@ function focusNode(node) {
 module.exports = focusNode;
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8885,7 +8929,7 @@ var CSSProperty = {
 module.exports = CSSProperty;
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9247,7 +9291,7 @@ function getClassName(propValue) {
 module.exports = ReactPropTypes;
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9435,7 +9479,7 @@ var ReactChildren = {
 module.exports = ReactChildren;
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9630,7 +9674,7 @@ module.exports = ReactDOMSelect;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9686,7 +9730,7 @@ function shallowEqual(objA, objB) {
 module.exports = shallowEqual;
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9777,7 +9821,7 @@ module.exports = EventListener;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9794,14 +9838,14 @@ module.exports = EventListener;
 
 
 
-var ReactComponent = __webpack_require__(83);
+var ReactComponent = __webpack_require__(84);
 var ReactElement = __webpack_require__(6);
 var ReactPropTypeLocations = __webpack_require__(32);
 var ReactPropTypeLocationNames = __webpack_require__(33);
-var ReactNoopUpdateQueue = __webpack_require__(84);
+var ReactNoopUpdateQueue = __webpack_require__(85);
 
 var assign = __webpack_require__(2);
-var emptyObject = __webpack_require__(21);
+var emptyObject = __webpack_require__(23);
 var invariant = __webpack_require__(1);
 var keyMirror = __webpack_require__(26);
 var keyOf = __webpack_require__(13);
@@ -10555,7 +10599,7 @@ module.exports = ReactClass;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10572,10 +10616,10 @@ module.exports = ReactClass;
 
 
 
-var ReactNoopUpdateQueue = __webpack_require__(84);
+var ReactNoopUpdateQueue = __webpack_require__(85);
 
 var canDefineProperty = __webpack_require__(30);
-var emptyObject = __webpack_require__(21);
+var emptyObject = __webpack_require__(23);
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(3);
 
@@ -10684,7 +10728,7 @@ module.exports = ReactComponent;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10809,7 +10853,7 @@ module.exports = ReactNoopUpdateQueue;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10828,9 +10872,9 @@ module.exports = ReactNoopUpdateQueue;
 
 var ReactDOMSelection = __webpack_require__(134);
 
-var containsNode = __webpack_require__(68);
-var focusNode = __webpack_require__(75);
-var getActiveElement = __webpack_require__(86);
+var containsNode = __webpack_require__(69);
+var focusNode = __webpack_require__(76);
+var getActiveElement = __webpack_require__(87);
 
 function isInDocument(node) {
   return containsNode(document.documentElement, node);
@@ -10939,7 +10983,7 @@ var ReactInputSelection = {
 module.exports = ReactInputSelection;
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10980,7 +11024,7 @@ function getActiveElement() /*?DOMElement*/{
 module.exports = getActiveElement;
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11268,57 +11312,13 @@ module.exports = ReactElementValidator;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 88 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var React = __webpack_require__(18);
-var css = __webpack_require__(169);
-var Card = React.createClass({
-    displayName: 'Card',
-
-    onClick: function () {
-        this.props.click(this.props.id);
-    },
-
-    render: function () {
-        return React.createElement(
-            'div',
-            { className: [css.root], onClick: this.onClick },
-            React.createElement('img', { className: [css.root__img], src: this.props.img, alt: this.props.name }),
-            React.createElement(
-                'div',
-                { className: [css.root__name] },
-                this.props.name
-            ),
-            React.createElement(
-                'div',
-                { className: [css.root__damage] },
-                this.props.damage
-            ),
-            React.createElement(
-                'div',
-                { className: [css.root__health] },
-                React.createElement(
-                    'span',
-                    null,
-                    '\u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435: '
-                ),
-                this.props.health
-            )
-        );
-    }
-});
-
-module.exports = Card;
-
-/***/ }),
 /* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var React = __webpack_require__(18);
+var React = __webpack_require__(17);
 var ReactDOM = __webpack_require__(161);
 var App = __webpack_require__(162);
-var cssBase = __webpack_require__(174);
+var cssBase = __webpack_require__(177);
 
 ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
 
@@ -11340,7 +11340,7 @@ ReactDOM.render(React.createElement(App, null), document.getElementById('root'))
 
 
 
-var ReactDOM = __webpack_require__(54);
+var ReactDOM = __webpack_require__(55);
 var ReactDOMServer = __webpack_require__(152);
 var ReactIsomorphic = __webpack_require__(156);
 
@@ -11391,7 +11391,7 @@ var ExecutionEnvironment = __webpack_require__(4);
 
 var createNodesFromMarkup = __webpack_require__(92);
 var emptyFunction = __webpack_require__(9);
-var getMarkupWrap = __webpack_require__(57);
+var getMarkupWrap = __webpack_require__(58);
 var invariant = __webpack_require__(1);
 
 var OPEN_TAG_NAME_EXP = /^(<[^ \/>]+)/;
@@ -11544,7 +11544,7 @@ module.exports = Danger;
 var ExecutionEnvironment = __webpack_require__(4);
 
 var createArrayFromMixed = __webpack_require__(93);
-var getMarkupWrap = __webpack_require__(57);
+var getMarkupWrap = __webpack_require__(58);
 var invariant = __webpack_require__(1);
 
 /**
@@ -11817,7 +11817,7 @@ module.exports = quoteAttributeValueForBrowser;
 
 
 var EventConstants = __webpack_require__(11);
-var ReactErrorUtils = __webpack_require__(60);
+var ReactErrorUtils = __webpack_require__(61);
 
 var invariant = __webpack_require__(1);
 var warning = __webpack_require__(3);
@@ -12025,7 +12025,7 @@ module.exports = EventPluginUtils;
 
 
 
-var EventPluginHub = __webpack_require__(19);
+var EventPluginHub = __webpack_require__(21);
 
 function runEventQueueInBatch(events) {
   EventPluginHub.enqueueEvents(events);
@@ -12362,7 +12362,7 @@ module.exports = isNode;
 var ReactComponentEnvironment = __webpack_require__(43);
 var ReactCurrentOwner = __webpack_require__(10);
 var ReactElement = __webpack_require__(6);
-var ReactInstanceMap = __webpack_require__(20);
+var ReactInstanceMap = __webpack_require__(22);
 var ReactPerf = __webpack_require__(7);
 var ReactPropTypeLocations = __webpack_require__(32);
 var ReactPropTypeLocationNames = __webpack_require__(33);
@@ -12370,7 +12370,7 @@ var ReactReconciler = __webpack_require__(15);
 var ReactUpdateQueue = __webpack_require__(40);
 
 var assign = __webpack_require__(2);
-var emptyObject = __webpack_require__(21);
+var emptyObject = __webpack_require__(23);
 var invariant = __webpack_require__(1);
 var shouldUpdateReactComponent = __webpack_require__(44);
 var warning = __webpack_require__(3);
@@ -13062,7 +13062,7 @@ module.exports = ReactCompositeComponent;
 
 
 var EventConstants = __webpack_require__(11);
-var EventPropagators = __webpack_require__(22);
+var EventPropagators = __webpack_require__(24);
 var ExecutionEnvironment = __webpack_require__(4);
 var FallbackCompositionState = __webpack_require__(105);
 var SyntheticCompositionEvent = __webpack_require__(106);
@@ -13475,7 +13475,7 @@ module.exports = BeforeInputEventPlugin;
 var PooledClass = __webpack_require__(12);
 
 var assign = __webpack_require__(2);
-var getTextContentAccessor = __webpack_require__(72);
+var getTextContentAccessor = __webpack_require__(73);
 
 /**
  * This helper class stores information about text content of a target node,
@@ -13660,15 +13660,15 @@ module.exports = SyntheticInputEvent;
 
 
 var EventConstants = __webpack_require__(11);
-var EventPluginHub = __webpack_require__(19);
-var EventPropagators = __webpack_require__(22);
+var EventPluginHub = __webpack_require__(21);
+var EventPropagators = __webpack_require__(24);
 var ExecutionEnvironment = __webpack_require__(4);
 var ReactUpdates = __webpack_require__(8);
 var SyntheticEvent = __webpack_require__(16);
 
 var getEventTarget = __webpack_require__(46);
 var isEventSupported = __webpack_require__(39);
-var isTextInputElement = __webpack_require__(73);
+var isTextInputElement = __webpack_require__(74);
 var keyOf = __webpack_require__(13);
 
 var topLevelTypes = EventConstants.topLevelTypes;
@@ -14050,7 +14050,7 @@ module.exports = DefaultEventPluginOrder;
 
 
 var EventConstants = __webpack_require__(11);
-var EventPropagators = __webpack_require__(22);
+var EventPropagators = __webpack_require__(24);
 var SyntheticMouseEvent = __webpack_require__(34);
 
 var ReactMount = __webpack_require__(5);
@@ -14414,7 +14414,7 @@ module.exports = HTMLDOMPropertyConfig;
 
 
 
-var ReactInstanceMap = __webpack_require__(20);
+var ReactInstanceMap = __webpack_require__(22);
 
 var findDOMNode = __webpack_require__(48);
 var warning = __webpack_require__(3);
@@ -14470,7 +14470,7 @@ var ReactComponentBrowserEnvironment = __webpack_require__(37);
 var ReactDOMButton = __webpack_require__(123);
 var ReactDOMInput = __webpack_require__(124);
 var ReactDOMOption = __webpack_require__(125);
-var ReactDOMSelect = __webpack_require__(79);
+var ReactDOMSelect = __webpack_require__(80);
 var ReactDOMTextarea = __webpack_require__(126);
 var ReactMount = __webpack_require__(5);
 var ReactMultiChild = __webpack_require__(127);
@@ -14485,7 +14485,7 @@ var isEventSupported = __webpack_require__(39);
 var keyOf = __webpack_require__(13);
 var setInnerHTML = __webpack_require__(27);
 var setTextContent = __webpack_require__(35);
-var shallowEqual = __webpack_require__(80);
+var shallowEqual = __webpack_require__(81);
 var validateDOMNesting = __webpack_require__(45);
 var warning = __webpack_require__(3);
 
@@ -15430,7 +15430,7 @@ module.exports = ReactDOMComponent;
 var ReactMount = __webpack_require__(5);
 
 var findDOMNode = __webpack_require__(48);
-var focusNode = __webpack_require__(75);
+var focusNode = __webpack_require__(76);
 
 var Mixin = {
   componentDidMount: function () {
@@ -15469,7 +15469,7 @@ module.exports = AutoFocusUtils;
 
 
 
-var CSSProperty = __webpack_require__(76);
+var CSSProperty = __webpack_require__(77);
 var ExecutionEnvironment = __webpack_require__(4);
 var ReactPerf = __webpack_require__(7);
 
@@ -15735,7 +15735,7 @@ module.exports = camelize;
 
 
 
-var CSSProperty = __webpack_require__(76);
+var CSSProperty = __webpack_require__(77);
 
 var isUnitlessNumber = CSSProperty.isUnitlessNumber;
 
@@ -16132,8 +16132,8 @@ module.exports = ReactDOMInput;
 
 
 
-var ReactChildren = __webpack_require__(78);
-var ReactDOMSelect = __webpack_require__(79);
+var ReactChildren = __webpack_require__(79);
+var ReactDOMSelect = __webpack_require__(80);
 
 var assign = __webpack_require__(2);
 var warning = __webpack_require__(3);
@@ -16350,7 +16350,7 @@ module.exports = ReactDOMTextarea;
 
 
 var ReactComponentEnvironment = __webpack_require__(43);
-var ReactMultiChildUpdateTypes = __webpack_require__(58);
+var ReactMultiChildUpdateTypes = __webpack_require__(59);
 
 var ReactCurrentOwner = __webpack_require__(10);
 var ReactReconciler = __webpack_require__(15);
@@ -17036,10 +17036,10 @@ module.exports = flattenChildren;
 
 
 
-var EventListener = __webpack_require__(81);
+var EventListener = __webpack_require__(82);
 var ExecutionEnvironment = __webpack_require__(4);
 var PooledClass = __webpack_require__(12);
-var ReactInstanceHandles = __webpack_require__(17);
+var ReactInstanceHandles = __webpack_require__(18);
 var ReactMount = __webpack_require__(5);
 var ReactUpdates = __webpack_require__(8);
 
@@ -17297,14 +17297,14 @@ module.exports = getUnboundedScrollPosition;
 
 
 var DOMProperty = __webpack_require__(14);
-var EventPluginHub = __webpack_require__(19);
+var EventPluginHub = __webpack_require__(21);
 var ReactComponentEnvironment = __webpack_require__(43);
-var ReactClass = __webpack_require__(82);
-var ReactEmptyComponent = __webpack_require__(69);
+var ReactClass = __webpack_require__(83);
+var ReactEmptyComponent = __webpack_require__(70);
 var ReactBrowserEventEmitter = __webpack_require__(29);
-var ReactNativeComponent = __webpack_require__(70);
+var ReactNativeComponent = __webpack_require__(71);
 var ReactPerf = __webpack_require__(7);
-var ReactRootIndex = __webpack_require__(66);
+var ReactRootIndex = __webpack_require__(67);
 var ReactUpdates = __webpack_require__(8);
 
 var ReactInjection = {
@@ -17344,8 +17344,8 @@ module.exports = ReactInjection;
 var CallbackQueue = __webpack_require__(41);
 var PooledClass = __webpack_require__(12);
 var ReactBrowserEventEmitter = __webpack_require__(29);
-var ReactDOMFeatureFlags = __webpack_require__(64);
-var ReactInputSelection = __webpack_require__(85);
+var ReactDOMFeatureFlags = __webpack_require__(65);
+var ReactInputSelection = __webpack_require__(86);
 var Transaction = __webpack_require__(31);
 
 var assign = __webpack_require__(2);
@@ -17500,7 +17500,7 @@ module.exports = ReactReconcileTransaction;
 var ExecutionEnvironment = __webpack_require__(4);
 
 var getNodeForCharacterOffset = __webpack_require__(135);
-var getTextContentAccessor = __webpack_require__(72);
+var getTextContentAccessor = __webpack_require__(73);
 
 /**
  * While `isCollapsed` is available on the Selection object and `collapsed`
@@ -17795,15 +17795,15 @@ module.exports = getNodeForCharacterOffset;
 
 
 var EventConstants = __webpack_require__(11);
-var EventPropagators = __webpack_require__(22);
+var EventPropagators = __webpack_require__(24);
 var ExecutionEnvironment = __webpack_require__(4);
-var ReactInputSelection = __webpack_require__(85);
+var ReactInputSelection = __webpack_require__(86);
 var SyntheticEvent = __webpack_require__(16);
 
-var getActiveElement = __webpack_require__(86);
-var isTextInputElement = __webpack_require__(73);
+var getActiveElement = __webpack_require__(87);
+var isTextInputElement = __webpack_require__(74);
 var keyOf = __webpack_require__(13);
-var shallowEqual = __webpack_require__(80);
+var shallowEqual = __webpack_require__(81);
 
 var topLevelTypes = EventConstants.topLevelTypes;
 
@@ -18037,8 +18037,8 @@ module.exports = ServerReactRootIndex;
 
 
 var EventConstants = __webpack_require__(11);
-var EventListener = __webpack_require__(81);
-var EventPropagators = __webpack_require__(22);
+var EventListener = __webpack_require__(82);
+var EventPropagators = __webpack_require__(24);
 var ReactMount = __webpack_require__(5);
 var SyntheticClipboardEvent = __webpack_require__(139);
 var SyntheticEvent = __webpack_require__(16);
@@ -18047,7 +18047,7 @@ var SyntheticKeyboardEvent = __webpack_require__(141);
 var SyntheticMouseEvent = __webpack_require__(34);
 var SyntheticDragEvent = __webpack_require__(143);
 var SyntheticTouchEvent = __webpack_require__(144);
-var SyntheticUIEvent = __webpack_require__(23);
+var SyntheticUIEvent = __webpack_require__(25);
 var SyntheticWheelEvent = __webpack_require__(145);
 
 var emptyFunction = __webpack_require__(9);
@@ -18676,7 +18676,7 @@ module.exports = SyntheticClipboardEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(23);
+var SyntheticUIEvent = __webpack_require__(25);
 
 /**
  * @interface FocusEvent
@@ -18719,7 +18719,7 @@ module.exports = SyntheticFocusEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(23);
+var SyntheticUIEvent = __webpack_require__(25);
 
 var getEventCharCode = __webpack_require__(52);
 var getEventKey = __webpack_require__(142);
@@ -18962,7 +18962,7 @@ module.exports = SyntheticDragEvent;
 
 
 
-var SyntheticUIEvent = __webpack_require__(23);
+var SyntheticUIEvent = __webpack_require__(25);
 
 var getEventModifierState = __webpack_require__(47);
 
@@ -19748,7 +19748,7 @@ module.exports = ReactMount.renderSubtreeIntoContainer;
 
 
 
-var ReactDefaultInjection = __webpack_require__(71);
+var ReactDefaultInjection = __webpack_require__(72);
 var ReactServerRendering = __webpack_require__(153);
 var ReactVersion = __webpack_require__(53);
 
@@ -19780,15 +19780,15 @@ module.exports = ReactDOMServer;
  */
 
 
-var ReactDefaultBatchingStrategy = __webpack_require__(74);
+var ReactDefaultBatchingStrategy = __webpack_require__(75);
 var ReactElement = __webpack_require__(6);
-var ReactInstanceHandles = __webpack_require__(17);
-var ReactMarkupChecksum = __webpack_require__(67);
+var ReactInstanceHandles = __webpack_require__(18);
+var ReactMarkupChecksum = __webpack_require__(68);
 var ReactServerBatchingStrategy = __webpack_require__(154);
 var ReactServerRenderingTransaction = __webpack_require__(155);
 var ReactUpdates = __webpack_require__(8);
 
-var emptyObject = __webpack_require__(21);
+var emptyObject = __webpack_require__(23);
 var instantiateReactComponent = __webpack_require__(42);
 var invariant = __webpack_require__(1);
 
@@ -19992,13 +19992,13 @@ module.exports = ReactServerRenderingTransaction;
 
 
 
-var ReactChildren = __webpack_require__(78);
-var ReactComponent = __webpack_require__(83);
-var ReactClass = __webpack_require__(82);
+var ReactChildren = __webpack_require__(79);
+var ReactComponent = __webpack_require__(84);
+var ReactClass = __webpack_require__(83);
 var ReactDOMFactories = __webpack_require__(157);
 var ReactElement = __webpack_require__(6);
-var ReactElementValidator = __webpack_require__(87);
-var ReactPropTypes = __webpack_require__(77);
+var ReactElementValidator = __webpack_require__(88);
+var ReactPropTypes = __webpack_require__(78);
 var ReactVersion = __webpack_require__(53);
 
 var assign = __webpack_require__(2);
@@ -20075,7 +20075,7 @@ module.exports = React;
 
 
 var ReactElement = __webpack_require__(6);
-var ReactElementValidator = __webpack_require__(87);
+var ReactElementValidator = __webpack_require__(88);
 
 var mapObject = __webpack_require__(158);
 
@@ -20398,18 +20398,18 @@ module.exports = deprecated;
 "use strict";
 
 
-module.exports = __webpack_require__(54);
+module.exports = __webpack_require__(55);
 
 
 /***/ }),
 /* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var React = __webpack_require__(18);
+var React = __webpack_require__(17);
 var css = __webpack_require__(163);
 var Area = __webpack_require__(166);
 var Hand = __webpack_require__(171);
-var Enemy = __webpack_require__(176);
+var Enemy = __webpack_require__(174);
 
 var App = React.createClass({
     displayName: 'App',
@@ -20449,24 +20449,30 @@ var App = React.createClass({
                 health: 7
             }],
 
-            areaCard: []
+            areaCard: [],
+            enemyCard: []
         };
     },
 
     handleClick: function (cardId) {
         var cardsList = this.state.data;
         var areaCards = this.state.areaCard;
+        var enemyCards = this.state.enemyCard;
         for (var i = 0; i < cardsList.length; i++) {
             if (this.state.data[i].id === cardId) {
                 if (areaCards.length < 4) {
                     areaCards.push(this.state.data[i]);
                 }
             }
+            enemyCards.push(this.state.data[i]);
         }
 
         this.setState({
-            areaCard: areaCards
+            areaCard: areaCards,
+            enemyCards: enemyCards
         });
+
+        console.log(enemyCards);
     },
 
     render: function () {
@@ -20505,7 +20511,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
+var update = __webpack_require__(20)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -20525,7 +20531,7 @@ if(false) {
 /* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(24)();
+exports = module.exports = __webpack_require__(19)();
 // imports
 
 
@@ -20634,9 +20640,9 @@ module.exports = function (css) {
 /* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var React = __webpack_require__(18);
+var React = __webpack_require__(17);
 var css = __webpack_require__(167);
-var Card = __webpack_require__(88);
+var Card = __webpack_require__(54);
 
 var Enemy = React.createClass({
     displayName: 'Enemy',
@@ -20677,7 +20683,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
+var update = __webpack_require__(20)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -20697,12 +20703,12 @@ if(false) {
 /* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(24)();
+exports = module.exports = __webpack_require__(19)();
 // imports
 
 
 // module
-exports.push([module.i, ".area__root {\n  padding: 20px;\n  height: auto;\n  text-align: center;\n  border: 1px solid;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n}\n", ""]);
+exports.push([module.i, ".area__root {\n  padding: 20px;\n  height: auto;\n  text-align: center;\n  border: 1px solid #1e90ff;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n}\n", ""]);
 
 // exports
 exports.locals = {
@@ -20724,7 +20730,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
+var update = __webpack_require__(20)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -20744,7 +20750,7 @@ if(false) {
 /* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(24)();
+exports = module.exports = __webpack_require__(19)();
 // imports
 
 
@@ -20764,9 +20770,9 @@ exports.locals = {
 /* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var React = __webpack_require__(18);
+var React = __webpack_require__(17);
 var css = __webpack_require__(172);
-var Card = __webpack_require__(88);
+var Card = __webpack_require__(54);
 
 var Hand = React.createClass({
     displayName: 'Hand',
@@ -20811,7 +20817,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
+var update = __webpack_require__(20)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -20831,12 +20837,12 @@ if(false) {
 /* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(24)();
+exports = module.exports = __webpack_require__(19)();
 // imports
 
 
 // module
-exports.push([module.i, ".hand__root {\n  padding: 20px;\n  border: 1px solid;\n  height: auto;\n  margin: 10px 0 0 0;\n  text-align: center;\n  display: flex;\n  justify-content: space-around;\n}\n", ""]);
+exports.push([module.i, ".hand__root {\n  padding: 20px;\n  border: 1px solid #008000;\n  height: auto;\n  margin: 10px 0 0 0;\n  text-align: center;\n  display: flex;\n  justify-content: space-around;\n}\n", ""]);
 
 // exports
 exports.locals = {
@@ -20847,54 +20853,9 @@ exports.locals = {
 /* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(175);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../node_modules/css-loader/index.js??ref--1-1!../node_modules/stylus-loader/index.js!./base.styl", function() {
-			var newContent = require("!!../node_modules/css-loader/index.js??ref--1-1!../node_modules/stylus-loader/index.js!./base.styl");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 175 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(24)();
-// imports
-
-
-// module
-exports.push([module.i, "body {\n  background-color: #c0c0c0;\n  font-size: 17px;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 176 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var React = __webpack_require__(18);
-var css = __webpack_require__(177);
-var Card = __webpack_require__(88);
+var React = __webpack_require__(17);
+var css = __webpack_require__(175);
+var Card = __webpack_require__(54);
 
 var Area = React.createClass({
     displayName: 'Area',
@@ -20921,13 +20882,13 @@ var Area = React.createClass({
 module.exports = Area;
 
 /***/ }),
-/* 177 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(178);
+var content = __webpack_require__(176);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -20935,7 +20896,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(25)(content, options);
+var update = __webpack_require__(20)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -20952,20 +20913,65 @@ if(false) {
 }
 
 /***/ }),
-/* 178 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(24)();
+exports = module.exports = __webpack_require__(19)();
 // imports
 
 
 // module
-exports.push([module.i, ".enemy__root {\n  padding: 20px;\n  height: auto;\n  margin: 20px 0 0 0;\n  text-align: center;\n  border: 1px solid;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n}\n", ""]);
+exports.push([module.i, ".enemy__root {\n  padding: 20px;\n  height: auto;\n  margin: 20px 0 0 0;\n  text-align: center;\n  border: 1px solid #f00;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-around;\n}\n", ""]);
 
 // exports
 exports.locals = {
 	"root": "enemy__root"
 };
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(178);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {"hmr":true}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(20)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../node_modules/css-loader/index.js??ref--1-1!../node_modules/stylus-loader/index.js!./base.styl", function() {
+			var newContent = require("!!../node_modules/css-loader/index.js??ref--1-1!../node_modules/stylus-loader/index.js!./base.styl");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(19)();
+// imports
+
+
+// module
+exports.push([module.i, "body {\n  background-color: #c0c0c0;\n  font-size: 17px;\n}\n", ""]);
+
+// exports
+
 
 /***/ })
 /******/ ]);
