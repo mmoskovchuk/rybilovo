@@ -10,14 +10,14 @@ var App = React.createClass({
         return {
             data: [
                 {
-                    id: 11,
+                    id: 0,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/3/33/S_luchnik_dzara.jpg',
                     name: 'Лучник Дзара',
                     damage: 1,
                     health: 7
                 },
                 {
-                    id: 14,
+                    id: 1,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/3/37/S_amazonka.jpg',
                     name: 'Амазонка',
                     damage: 1,
@@ -38,7 +38,7 @@ var App = React.createClass({
                     health: 6
                 },
                 {
-                    id: 7,
+                    id: 4,
                     img: 'https://vignette.wikia.nocookie.net/btc/images/e/e0/S_ork_voevoda.jpg',
                     name: 'Орк-воевода',
                     damage: 2,
@@ -55,29 +55,32 @@ var App = React.createClass({
         var cardsList = this.state.data;
         var areaCards = this.state.areaCard;
         var enemyCards = this.state.enemyCard;
+
         for (var i = 0; i < cardsList.length; i++) {
             if (this.state.data[i].id === cardId) {
                 if (areaCards.length < 4) {
                     areaCards.push(this.state.data[i]);
                 }
             }
-            enemyCards.push(this.state.data[i]);
+            var sortId = Math.round(cardId+1);
+            if (this.state.data[i].id === sortId) {
+                if (enemyCards.length < 3) {
+                    enemyCards.push(this.state.data[i]);
+                }
+            }
         }
-
 
         this.setState({
             areaCard: areaCards,
-            enemyCards: enemyCards
+            enemyCard: enemyCards
         });
 
-
-
-        console.log(enemyCards);
     },
 
     render: function () {
         var data = this.state.data;
         var areaCard = this.state.areaCard;
+        var enemyCard = this.state.enemyCard;
         //shuffled cards
         var shuffled = data.sort(function() {
             return .5 - Math.random()
@@ -88,7 +91,7 @@ var App = React.createClass({
         return (
             <div>
                 <Area arr={areaCard} handleClick={this.handleClick} />
-                <Enemy arr={areaCard} handleClick={this.handleClick} />
+                <Enemy arr={enemyCard} handleClick={this.handleClick} />
                 <Hand handleClick={this.handleClick} items={selected}/>
             </div>
         )
